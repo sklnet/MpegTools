@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête\dtl">
+      <UniqueIdentifier>{968b5714-85c2-490c-8bfd-fb2275bf4d66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common\cc_checker.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\logstream.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="merge_ts.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\ts_file_read.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="TsMerger.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="TsMergerDlg.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\vredo_prj.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\cc_checker.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\lang_switch.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\logstream.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="merge_ts.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\ts_file_read.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="TsMergerDlg.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\vredo_prj.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\Diff.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\Diff3.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\dtl.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\functors.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\Lcs.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\Sequence.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\Ses.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="dtl\variables.hpp">
+      <Filter>Fichiers d%27en-tête\dtl</Filter>
+    </ClInclude>
+    <ClInclude Include="TsMerger_resource.h">
+      <Filter>Fichiers de ressources</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="TsMerger.exe.manifest">
+      <Filter>Fichiers de ressources</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TsMerger.ico">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+    <None Include="version_update.bat">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+    <None Include="Doxyfile" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TsMerger_en.rc">
+      <Filter>Fichiers de ressources</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="TsMerger_fr.rc">
+      <Filter>Fichiers de ressources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuildStep Include="TsMerger_en.rc2">
+      <Filter>Fichiers de ressources</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="TsMerger_fr.rc2">
+      <Filter>Fichiers de ressources</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="TsMergerHelp_en.rtf">
+      <Filter>Fichiers de ressources</Filter>
+    </CustomBuildStep>
+    <CustomBuildStep Include="TsMergerHelp_fr.rtf">
+      <Filter>Fichiers de ressources</Filter>
+    </CustomBuildStep>
+  </ItemGroup>
+</Project>

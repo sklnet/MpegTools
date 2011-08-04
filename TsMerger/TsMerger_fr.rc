@@ -1,0 +1,173 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "TsMerger_resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#include "version.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Français (France) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)
+#ifdef _WIN32
+LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "TsMerger_resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#include ""version.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "#include ""TsMerger_fr.rc2""\r\n"
+    "\r\n"
+    "#ifdef _VS2005\r\n"
+    "IDI_TSMERGER            ICON                    ""TsMerger_2005.ico""\r\n"
+    "#else\r\n"
+    "IDI_TSMERGER            ICON                    ""TsMerger.ico""\r\n"
+    "#endif\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 300, 152, 230, 75
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_CAPTION | WS_SYSMENU
+CAPTION "PTvM TS TsMerger - À propos"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    ICON            IDI_TSMERGER,IDC_MYICON,7,7,16,16
+    CTEXT           "…",IDC_VERSION,55,10,119,16,SS_NOPREFIX
+    CTEXT           "Copyright Gingko © 2011",IDC_STATIC,48,32,132,8
+    RTEXT           "Publié sous licence",IDC_STATIC,72,41,65,8
+    LTEXT           "GPL",IDC_LICENSE_URL,140,41,16,8
+    CTEXT           "Site web de l'éditeur",IDC_WEBSITE_URL,54,51,120,8
+    RTEXT           "Icône réalisée par",IDC_STATIC,16,60,61,8
+    RTEXT           "lopagof",IDC_ICON_AUTHOR_URL,80,60,24,8
+    LTEXT           ", sous licence",IDC_STATIC,103,60,46,8
+    LTEXT           "Creative Commons",IDC_ICON_LICENSE_URL,148,60,65,8
+    DEFPUSHBUTTON   "OK",IDOK,191,7,32,14,WS_GROUP
+END
+
+IDD_TSMERGER DIALOGEX 0, 0, 557, 294
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "PTvM TS TsMerger - Utilitaire de fusion TS"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Premier fichier à fusionner :",IDC_STATIC,6,13,89,8
+    EDITTEXT        IDC_FILE1,6,24,269,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "Parcourir…",IDC_BROWSE1,225,7,50,14
+    LTEXT           "Second fichier à fusionner :",IDC_STATIC,281,13,89,8
+    EDITTEXT        IDC_FILE2,281,24,269,14,ES_AUTOHSCROLL | ES_READONLY
+    PUSHBUTTON      "Parcourir…",IDC_BROWSE2,500,7,50,14
+    CTEXT           "…",IDC_INFO1,28,42,224,8
+    PUSHBUTTON      "Échanger",IDC_SWAP,257,41,42,12,WS_DISABLED
+    CTEXT           "…",IDC_INFO2,303,42,224,8
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,6,57,269,14
+    CONTROL         "",IDC_PROGRESS2,"msctls_progress32",WS_BORDER,281,57,269,14
+    LTEXT           "Journal de la fusion :",IDC_STATIC,6,78,200,8
+    CONTROL         "Silence !",IDC_QUIET1,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,232,76,43,12
+    LISTBOX         IDC_MSGLIST1,6,89,269,176,LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | LBS_EXTENDEDSEL | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Journal de la sortie :",IDC_STATIC,281,78,200,8
+    CONTROL         "Silence !",IDC_QUIET2,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,507,76,43,12
+    LISTBOX         IDC_MSGLIST2,281,89,269,176,LBS_USETABSTOPS | LBS_NOINTEGRALHEIGHT | LBS_EXTENDEDSEL | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Enregistrer sous…",IDC_SAVE_AS,7,273,84,14,WS_DISABLED
+    CONTROL         "Mode union",IDC_UNION_MODE,"Button",BS_AUTORADIOBUTTON | WS_GROUP,104,271,72,8
+    CONTROL         "Mode intersection",IDC_INTERSECTION_MODE,"Button",BS_AUTORADIOBUTTON,104,280,72,8
+    PUSHBUTTON      "Pause",IDC_PAUSE,200,273,50,14,WS_DISABLED | WS_GROUP
+    PUSHBUTTON      "Interrompre",IDCANCEL,257,273,50,14,WS_DISABLED
+    CONTROL         "Générer un fichier projet VideoRedo",IDC_VIDEOREDO_PRJ,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,317,272,76,16
+    PUSHBUTTON      "Aide…",IDC_HELPBOX,394,273,43,14
+    PUSHBUTTON      "À propos…",IDC_ABOUTBOX,443,273,43,14
+    DEFPUSHBUTTON   "Quitter",IDCLOSE,500,273,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 223
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 68
+    END
+
+    IDD_TSMERGER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 550
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RCDATA
+//
+
+IDR_RTFHELPTEXT         RCDATA                  "TsMergerHelp_fr.lzma"
+#endif    // Français (France) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+#include "TsMerger_fr.rc2"
+
+#ifdef _VS2005
+IDI_TSMERGER            ICON                    "TsMerger_2005.ico"
+#else
+IDI_TSMERGER            ICON                    "TsMerger.ico"
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

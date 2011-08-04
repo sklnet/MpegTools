@@ -1,0 +1,16 @@
+Méthode (provisoire ?) pour optimiser la taille des documents .rtf avant de les inclure
+dans les ressources d'aide (même si ceux-ci pourraient en fait y être inclus directement,
+mais leur taille est 2 à 3 fois trop importante) :
+
+1) Toujours modifier le document sous sa forme "_word.rtf", qui n'est pas incluse directement dans l'application.
+2) Après chaque modification (ou en tout cas après finalisation), ouvrir le document avec l'application WordPad.
+3) Réenregistrer immédiatement le fichier sans le modifier, sous le nom .rtf SANS "_word" (il est sans doute nécessaire,
+cependant, d'y modifier au moins un caractère et d'annuler ce changement manuellement avant enregistrement).
+4) Le fichier ainsi généré comportant cependant quelques défauts récupérables avec Word, mais pas dans le dialogue
+d'aide, procéder ensuite de la même manière en utilisant Microsoft Word (par exemple Word 2003), à partir du
+fichier nouvellement enregistré, en le réenregistrant à nouveau, cette fois sous le même nom.
+
+Ne pas éditer le document modifié cas, même si son apparence est identique dans l'application, on constate
+cependant avec Word que certaines informations, en particulier les feuilles de style, ont disparu.
+
+La compression .lzma qui est automatiquement effectuée à la compilation rend les choses ensuite encore plus optimales.
