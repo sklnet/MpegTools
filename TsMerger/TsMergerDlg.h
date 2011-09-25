@@ -96,7 +96,7 @@ class CTsMergerDialog :
 	{
 	public:
 		HelpDialog() :
-			CHelpDialogBase(_TL("PTvM TS TsMerger - Help","PTvM TS TsMerger - Aide"), IDR_RTFHELPTEXT)
+			CHelpDialogBase(_TL("PTvM TS Merger - Help","PTvM TS Merger - Aide"), IDR_RTFHELPTEXT)
 		{
 		}
 	};

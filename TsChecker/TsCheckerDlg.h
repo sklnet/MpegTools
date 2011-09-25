@@ -82,7 +82,7 @@ class CTsCheckerDialog :
 	{
 	public:
 		HelpDialog() :
-			CHelpDialogBase(_TL("PTvM TS TsMerger - Help","PTvM TS TsMerger - Aide"), IDR_RTFHELPTEXT)
+			CHelpDialogBase(_TL("PTvM TS Checker - Help","PTvM TS Checker - Aide"), IDR_RTFHELPTEXT)
 		{
 		}
 	};

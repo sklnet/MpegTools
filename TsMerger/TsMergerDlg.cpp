@@ -153,7 +153,7 @@ INT_PTR CAboutDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		ReformatCompileTime(szCompTime, _countof(szCompTime), _TL(" at "," à "), __DATE__ ", " __TIME__);
 		_stprintf_s(szVersion,
-			_T("PTvM TS TsMerger ver.") TEXT(PRODUCT_VERSION_STR) EOL
+			_T("PTvM TS Merger ver.") TEXT(PRODUCT_VERSION_STR) EOL
 			_TL("Compiled %s","Compilé %s"),
 			szCompTime);
 		SetDlgItemText(hDlg, IDC_VERSION, szVersion);
