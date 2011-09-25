@@ -71,6 +71,6 @@ using namespace std;
 
 #include "utils.h"
 #include "rctutils.h"
-#include "console.h"
+#include "console_select.h"
 #include "mpeg2defs.h"
 #include "shared_ptr_ptvm.h"

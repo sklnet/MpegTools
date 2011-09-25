@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "TsMergerDlg.h"
+#include "filedlg.h"
 #include "version.h"
 #include "Hyperlinks.h"
 
@@ -600,13 +601,8 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_INITDIALOG: {
 	#if USE_CONSOLE
-		// Affichage des messages de debugging initiaux, avec ouverture éventuelle de la console
-	  #if USE_CONSOLE==1
-		startConsoleWin(true, TEXT("TsMerger.log"));
-	  #else
-		startConsoleDbg();
-	  #endif // #if USE_CONSOLE==1
-	#endif // #if USE_CONSOLE
+		startConsole(_T("Fenêtre de diagnostic de TsMerger"), _T("TsMerger.log"));
+	#endif
 		// Initialisation de la fenêtre
 		LONG	nScrW = GetSystemMetrics(SM_CXFULLSCREEN);
 		LONG	nScrH = GetSystemMetrics(SM_CYFULLSCREEN);

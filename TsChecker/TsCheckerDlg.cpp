@@ -24,6 +24,7 @@
 
 #include "stdafx.h"
 #include "TsCheckerDlg.h"
+#include "filedlg.h"
 #include "version.h"
 #include "Hyperlinks.h"
 
@@ -450,13 +451,8 @@ INT_PTR CTsCheckerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_INITDIALOG: {
 	#if USE_CONSOLE
-		// Affichage des messages de debugging initiaux, avec ouverture éventuelle de la console
-	  #if USE_CONSOLE==1
-		startConsoleWin(true, TEXT("TsChecker.log"));
-	  #else
-		startConsoleDbg();
-	  #endif // #if USE_CONSOLE==1
-	#endif // #if USE_CONSOLE
+		startConsole(_T("Fenêtre de diagnostic de TsChecker"), _T("TsChecker.log"));
+	#endif
 		// Initialisation de la fenêtre
 		LONG	nScrW = GetSystemMetrics(SM_CXFULLSCREEN);
 		LONG	nScrH = GetSystemMetrics(SM_CYFULLSCREEN);
