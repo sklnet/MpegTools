@@ -8,6 +8,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TsChecker", "TsChecker\TsCh
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tinyxml", "..\tinyxml\tinyxml_lib_2010.vcxproj", "{C406DAEC-0886-4771-8DEA-9D7329B46CC1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{BE729FE6-9B0F-447F-9EA0-2123F80E1E05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{67BABF4C-A7AD-43DC-BFB3-B0A93F57FD14}"
+	ProjectSection(SolutionItems) = preProject
+		config.h = config.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_en|Win32 = Debug_en|Win32
@@ -87,5 +94,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C406DAEC-0886-4771-8DEA-9D7329B46CC1} = {BE729FE6-9B0F-447F-9EA0-2123F80E1E05}
+		{6166E3AA-7335-4CCF-AEBB-D6DFC126B929} = {BE729FE6-9B0F-447F-9EA0-2123F80E1E05}
 	EndGlobalSection
 EndGlobal
