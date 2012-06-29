@@ -791,6 +791,7 @@
 			</File>
 			<Filter
 				Name="dtl"
+				UniqueIdentifier="{968b5714-85c2-490c-8bfd-fb2275bf4d66}"
 				>
 				<File
 					RelativePath="dtl\Diff.hpp"
