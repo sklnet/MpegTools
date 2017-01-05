@@ -99,8 +99,12 @@ CCChecker::Result CTsFileReader::ReadPacket(TS_packet_Ex & sTs) throw(...)
 			return sRes;
 
 		memcpy(&sTs, sMm.ptr, sizeof(TS_packet));
-		if (sTs.isTS(true))
+		if (sTs.isTS(true)) {
+			sMm += sizeof(TS_packet);
+			if (sTs.hdr.pid == p_pid_NULL)	// Sauter les paquets nuls qui peuvent parfois avoir été laissés
+				continue;
 			break;
+		}
 
 		if (++nCount > 10) {	// Au bout de 10 défauts, on laisse tomber
 			sRes.ePkErr = pe_BadData;
@@ -115,8 +119,6 @@ CCChecker::Result CTsFileReader::ReadPacket(TS_packet_Ex & sTs) throw(...)
 		}
 		sMm >>= pSearch;
 	}
-
-	sMm += sizeof(TS_packet);
 
 	sRes		= CheckTS(sTs);
 	sTs.pid		= sRes.pid;
@@ -189,7 +191,7 @@ bool CTsGrpFileReader::LoadGroup() throw(...)
 
 // ====================================================================================
 
-#define MAX_PACKET_LOOP	10000
+#define MAX_PACKET_LOOP	250000
 
 void CTsFileAnalyzer::PidList::RefPid(WORD pid, bool bHasPcr)
 {
