@@ -70,18 +70,18 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="TsChecker_en.rc2">
+    <CustomBuild Include="TsChecker_en.rc2">
       <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsChecker_fr.rc2">
+    </CustomBuild>
+    <CustomBuild Include="TsChecker_fr.rc2">
       <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsCheckerHelp_en.rtf">
+    </CustomBuild>
+    <CustomBuild Include="TsCheckerHelp_en.rtf">
       <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsCheckerHelp_fr.rtf">
+    </CustomBuild>
+    <CustomBuild Include="TsCheckerHelp_fr.rtf">
       <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Image Include="TsChecker.ico">

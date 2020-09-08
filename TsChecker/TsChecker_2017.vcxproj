@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug_en|Win32">
       <Configuration>Debug_en</Configuration>
@@ -35,46 +35,54 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectName>TsMerger</ProjectName>
-    <ProjectGuid>{18E2693F-F74B-4D5E-B6C2-5C115ECA10B2}</ProjectGuid>
-    <RootNamespace>TsMerger</RootNamespace>
+    <ProjectName>TsChecker</ProjectName>
+    <ProjectGuid>{340A5884-245A-42EF-9EDE-43B20587C1F9}</ProjectGuid>
+    <RootNamespace>TsChecker</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_en|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_en|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_fr|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -106,45 +114,60 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">$(Configuration)\$(Platform)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug_fr|x64'">$(Configuration)\$(Platform)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_en|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_en|x64'">$(Configuration)\$(Platform)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'">$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">$(Configuration)\$(Platform)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug_fr|x64'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_en|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_en|x64'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'">false</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">$(ProjectDir)..\..\Builds\en\dbg\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">$(ProjectDir)..\..\Builds\en\dbg\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'">$(ProjectDir)..\..\Builds\dbg\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug_fr|x64'">$(ProjectDir)..\..\Builds\dbg\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_en|Win32'">$(ProjectDir)..\..\Builds\en\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_en|x64'">$(ProjectDir)..\..\Builds\en\$(Platform)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'">$(ProjectDir)..\..\Builds\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">$(ProjectDir)..\..\Builds\$(Platform)\</OutDir>
+    <_ProjectFileVersion>15.0.27128.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">
+    <OutDir>$(ProjectDir)..\..\Builds\en\dbg\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">
+    <OutDir>$(ProjectDir)..\..\Builds\en\dbg\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'">
+    <OutDir>$(ProjectDir)..\..\Builds\dbg\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_fr|x64'">
+    <OutDir>$(ProjectDir)..\..\Builds\dbg\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_en|Win32'">
+    <OutDir>$(ProjectDir)..\..\Builds\en\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_en|x64'">
+    <OutDir>$(ProjectDir)..\..\Builds\en\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'">
+    <OutDir>$(ProjectDir)..\..\Builds\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">
+    <OutDir>$(ProjectDir)..\..\Builds\$(Platform)\</OutDir>
+    <IntDir>$(Configuration)\$(Platform)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">
     <PreBuildEvent>
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_en.rtf TsMergerHelp_en.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_en.rtf TsCheckerHelp_en.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;USE_CONSOLE=1;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;USE_CONSOLE=1;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -154,15 +177,14 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -171,17 +193,16 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_en.rtf TsMergerHelp_en.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_en.rtf TsCheckerHelp_en.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;USE_CONSOLE=1;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;USE_CONSOLE=1;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -191,15 +212,14 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -208,14 +228,13 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_fr.rtf TsMergerHelp_fr.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_fr.rtf TsCheckerHelp_fr.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;USE_CONSOLE=1;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;USE_CONSOLE=1;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -225,15 +244,14 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -242,17 +260,16 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_fr.rtf TsMergerHelp_fr.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_fr.rtf TsCheckerHelp_fr.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;USE_CONSOLE=1;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;USE_CONSOLE=1;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -262,15 +279,14 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -279,13 +295,12 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_en.rtf TsMergerHelp_en.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_en.rtf TsCheckerHelp_en.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -293,7 +308,7 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -302,8 +317,7 @@ version_update.bat
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -312,16 +326,15 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_en.rtf TsMergerHelp_en.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_en.rtf TsCheckerHelp_en.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;LANG=1033;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -329,7 +342,7 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -338,8 +351,7 @@ version_update.bat
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -348,13 +360,12 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_fr.rtf TsMergerHelp_fr.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_fr.rtf TsCheckerHelp_fr.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -362,7 +373,7 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -371,8 +382,7 @@ version_update.bat
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -381,16 +391,15 @@ version_update.bat
       <Message>Génération des fichiers de numéro de version</Message>
       <Command>cd $(ProjectDir)
 echo #### Compression de la documentation
-..\..\tools\lzmac e TsMergerHelp_fr.rtf TsMergerHelp_fr.lzma
-version_update.bat
-</Command>
+..\..\tools\lzmac e TsCheckerHelp_fr.rtf TsCheckerHelp_fr.lzma
+version_update.bat</Command>
     </PreBuildEvent>
     <Midl>
       <TargetEnvironment>X64</TargetEnvironment>
     </Midl>
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;dtl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;STRSAFE_LIB;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\..\PTvM_Lib;..\..\tinyxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NTDDI_VERSION=NTDDI_WINXPSP2;_WIN32_WINNT=_WIN32_WINNT_WINXP;LANG=1036;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -398,7 +407,7 @@ version_update.bat
       <DisableSpecificWarnings>4355;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2010;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_VS2017;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>comctl32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -407,15 +416,13 @@ version_update.bat
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
-      <DataExecutionPrevention>
-      </DataExecutionPrevention>
+      <DataExecutionPrevention />
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\common\cc_checker.cpp" />
     <ClCompile Include="..\common\logstream.cpp" />
-    <ClCompile Include="merge_ts.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">Create</PrecompiledHeader>
@@ -426,64 +433,51 @@ version_update.bat
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="test_ts.cpp" />
     <ClCompile Include="..\common\ts_file_read.cpp" />
-    <ClCompile Include="TsMerger.cpp" />
-    <ClCompile Include="TsMergerDlg.cpp" />
+    <ClCompile Include="TsChecker.cpp" />
+    <ClCompile Include="TsCheckerDlg.cpp" />
     <ClCompile Include="..\common\vredo_prj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\cc_checker.h" />
-    <ClInclude Include="dtl\Diff.hpp" />
-    <ClInclude Include="dtl\Diff3.hpp" />
-    <ClInclude Include="dtl\dtl.hpp" />
-    <ClInclude Include="dtl\functors.hpp" />
     <ClInclude Include="..\common\lang_switch.h" />
-    <ClInclude Include="dtl\Lcs.hpp" />
     <ClInclude Include="..\common\logstream.h" />
-    <ClInclude Include="merge_ts.h" />
-    <ClInclude Include="dtl\Sequence.hpp" />
-    <ClInclude Include="dtl\Ses.hpp" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="test_ts.h" />
     <ClInclude Include="..\common\ts_file_read.h" />
-    <ClInclude Include="TsMerger_resource.h" />
-    <ClInclude Include="TsMergerDlg.h" />
-    <ClInclude Include="dtl\variables.hpp" />
+    <ClInclude Include="TsChecker_resource.h" />
+    <ClInclude Include="TsCheckerDlg.h" />
     <ClInclude Include="..\common\vredo_prj.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="TsMerger_en.rc2">
-      <FileType>RC</FileType>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsMerger_fr.rc2">
-      <FileType>RC</FileType>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsMergerHelp_en.rtf">
-      <FileType>Document</FileType>
+    <CustomBuild Include="TsChecker_en.rc2" />
+    <CustomBuild Include="TsChecker_fr.rc2" />
+    <CustomBuild Include="TsCheckerHelp_en.rtf">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_fr|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_fr|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">true</ExcludedFromBuild>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsMergerHelp_fr.rtf">
-      <FileType>Document</FileType>
+    </CustomBuild>
+    <CustomBuild Include="TsCheckerHelp_fr.rtf">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_en|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_en|x64'">true</ExcludedFromBuild>
-    </CustomBuildStep>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="TsMerger.ico" />
+    <Image Include="TsChecker.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="TsMerger.exe.manifest" />
+    <Manifest Include="TsChecker.exe.manifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Doxyfile" />
     <None Include="version_update.bat" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="TsMerger_en.rc">
+    <ResourceCompile Include="TsChecker_en.rc">
       <Culture Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">0x0409</Culture>
       <Culture Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">0x0409</Culture>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_fr|Win32'">true</ExcludedFromBuild>
@@ -497,7 +491,7 @@ version_update.bat
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">true</ExcludedFromBuild>
       <Culture Condition="'$(Configuration)|$(Platform)'=='Release_fr|x64'">0x0409</Culture>
     </ResourceCompile>
-    <ResourceCompile Include="TsMerger_fr.rc">
+    <ResourceCompile Include="TsChecker_fr.rc">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">true</ExcludedFromBuild>
       <Culture Condition="'$(Configuration)|$(Platform)'=='Debug_en|Win32'">0x040c</Culture>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_en|x64'">true</ExcludedFromBuild>
@@ -513,11 +507,11 @@ version_update.bat
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\PTvM_Lib\PTvM_Lib_2010.vcxproj">
+    <ProjectReference Include="..\..\PTvM_Lib\PTvM_Lib_2017.vcxproj">
       <Project>{6166e3aa-7335-4ccf-aebb-d6dfc126b929}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\tinyxml\tinyxml_lib_2010.vcxproj">
+    <ProjectReference Include="..\..\tinyxml\tinyxml_lib_2017.vcxproj">
       <Project>{c406daec-0886-4771-8dea-9d7329b46cc1}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>

@@ -70,20 +70,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuildStep Include="TsChecker_en.rc2">
-      <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsChecker_fr.rc2">
-      <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsCheckerHelp_en.rtf">
-      <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-    <CustomBuildStep Include="TsCheckerHelp_fr.rtf">
-      <Filter>Fichiers de ressources</Filter>
-    </CustomBuildStep>
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="TsChecker.ico">
       <Filter>Fichiers de ressources</Filter>
     </Image>
@@ -95,6 +81,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Doxyfile" />
+    <None Include="TsChecker_en.rc2">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+    <None Include="TsChecker_fr.rc2">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+    <None Include="TsCheckerHelp_en.rtf">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
+    <None Include="TsCheckerHelp_fr.rtf">
+      <Filter>Fichiers de ressources</Filter>
+    </None>
     <None Include="version_update.bat">
       <Filter>Fichiers de ressources</Filter>
     </None>
