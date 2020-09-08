@@ -1,25 +1,25 @@
 /**
-   dtl-1.14 -- Diff Template Library
-   
+   dtl-1.19 -- Diff Template Library
+
    In short, Diff Template Library is distributed under so called "BSD license",
-   
-   Copyright (c) 2008-2011 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+   Copyright (c) 2015 Tatsuhiko Kubo <cubicdaiya@gmail.com>
    All rights reserved.
-   
+
    Redistribution and use in source and binary forms, with or without modification,
    are permitted provided that the following conditions are met:
-   
+
    * Redistributions of source code must retain the above copyright notice,
    this list of conditions and the following disclaimer.
-   
+
    * Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
-   
+
    * Neither the name of the authors nor the names of its contributors
-   may be used to endorse or promote products derived from this software 
+   may be used to endorse or promote products derived from this software
    without specific prior written permission.
-   
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -45,7 +45,7 @@
 #include <iostream>
 
 namespace dtl {
-    
+
     using std::vector;
     using std::string;
     using std::pair;
@@ -59,7 +59,12 @@ namespace dtl {
     using std::rotate;
     using std::swap;
     using std::max;
-    
+
+    /**
+     * version string
+     */
+    const string version = "1.19";
+
     /**
      * type of edit for SES
      */
@@ -67,13 +72,13 @@ namespace dtl {
     const   edit_t SES_DELETE = -1;
     const   edit_t SES_COMMON = 0;
     const   edit_t SES_ADD    = 1;
-    
+
     /**
      * mark of SES
      */
-#define SES_MARK_DELETE _T("-")
-#define SES_MARK_COMMON _T(" ")
-#define SES_MARK_ADD    _T("+")
+#define SES_MARK_DELETE "-"
+#define SES_MARK_COMMON " "
+#define SES_MARK_ADD    "+"
 
     /**
      * info for Unified Format
@@ -82,11 +87,14 @@ namespace dtl {
         long long beforeIdx;           // index of prev sequence
         long long afterIdx;            // index of after sequence
         edit_t    type;                // type of edit(Add, Delete, Common)
+        bool operator==(const eleminfo& other) const{
+            return (this->beforeIdx == other.beforeIdx && this->afterIdx == other.afterIdx && this->type == other.type);
+        }
     } elemInfo;
-    
+
     const long long DTL_SEPARATE_SIZE = 3;
     const long long DTL_CONTEXT_SIZE  = 3;
-    
+
     /**
      * cordinate for registering route
      */
@@ -95,15 +103,15 @@ namespace dtl {
         long long y;                         // y cordinate
         long long k;                         // vertex
     } P;
-    
+
     /**
      * limit of cordinate size
      */
     const unsigned long long MAX_CORDINATES_SIZE = 2000000;
-    
+
     typedef vector< long long > editPath;
     typedef vector< P >         editPathCordinates;
-    
+
     /**
      * Structure of Unified Format Hunk
      */
@@ -129,6 +137,6 @@ namespace dtl {
     typedef typename elemVec::iterator        elemVec_iter;
 
 
-} 
+}
 
 #endif // DTL_VARIABLES_H

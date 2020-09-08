@@ -1,25 +1,25 @@
 /**
-   dtl-1.14 -- Diff Template Library
-   
+   dtl-1.19 -- Diff Template Library
+
    In short, Diff Template Library is distributed under so called "BSD license",
-   
-   Copyright (c) 2008-2011 Tatsuhiko Kubo <cubicdaiya@gmail.com>
+
+   Copyright (c) 2015 Tatsuhiko Kubo <cubicdaiya@gmail.com>
    All rights reserved.
-   
+
    Redistribution and use in source and binary forms, with or without modification,
    are permitted provided that the following conditions are met:
-   
+
    * Redistributions of source code must retain the above copyright notice,
    this list of conditions and the following disclaimer.
-   
+
    * Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
-   
+
    * Neither the name of the authors nor the names of its contributors
-   may be used to endorse or promote products derived from this software 
+   may be used to endorse or promote products derived from this software
    without specific prior written permission.
-   
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -39,26 +39,26 @@
 #define DTL_FUNCTORS_H
 
 namespace dtl {
-    
+
     /**
      * printer class template
      */
-    template <typename sesElem, typename stream = tostream >
+    template <typename sesElem, typename stream = ostream >
     class Printer
     {
     public :
-        Printer ()            : out_(tcout) {}
+        Printer ()            : out_(cout) {}
         Printer (stream& out) : out_(out)  {}
         virtual ~Printer () {}
         virtual void operator() (const sesElem& se) const = 0;
     protected :
         stream& out_;
     };
-    
+
     /**
      * common element printer class template
      */
-    template <typename sesElem, typename stream = tostream >
+    template <typename sesElem, typename stream = ostream >
     class CommonPrinter : public Printer < sesElem, stream >
     {
     public :
@@ -66,14 +66,14 @@ namespace dtl {
         CommonPrinter  (stream& out) : Printer < sesElem, stream > (out) {}
         ~CommonPrinter () {}
         void operator() (const sesElem& se) const {
-            this->out_ << SES_MARK_COMMON << se.first << endl;    
+            this->out_ << SES_MARK_COMMON << se.first << endl;
         }
     };
-    
+
     /**
      * ses element printer class template
      */
-    template <typename sesElem, typename stream = tostream >
+    template <typename sesElem, typename stream = ostream >
     class ChangePrinter : public Printer < sesElem, stream >
     {
     public :
@@ -94,23 +94,23 @@ namespace dtl {
             }
         }
     };
-    
+
     /**
-     * unfiend format element printer class template
+     * unified format element printer class template
      */
-    template <typename sesElem, typename stream = tostream >
+    template <typename sesElem, typename stream = ostream >
     class UniHunkPrinter
     {
     public :
-        UniHunkPrinter  ()            : out_(tcout) {}
+        UniHunkPrinter  ()            : out_(cout) {}
         UniHunkPrinter  (stream& out) : out_(out)  {}
         ~UniHunkPrinter () {}
         void operator() (const uniHunk< sesElem >& hunk) const {
-            out_ << _T("@@")
-                 << _T(" -")  << hunk.a << _T(",") << hunk.b
-                 << _T(" +")  << hunk.c << _T(",") << hunk.d
-                 << _T(" @@") << endl;
-            
+            out_ << "@@"
+                 << " -"  << hunk.a << "," << hunk.b
+                 << " +"  << hunk.c << "," << hunk.d
+                 << " @@" << endl;
+
             for_each(hunk.common[0].begin(), hunk.common[0].end(), CommonPrinter< sesElem, stream >(out_));
             for_each(hunk.change.begin(),    hunk.change.end(),    ChangePrinter< sesElem, stream >(out_));
             for_each(hunk.common[1].begin(), hunk.common[1].end(), CommonPrinter< sesElem, stream >(out_));
@@ -118,7 +118,7 @@ namespace dtl {
     private :
         stream& out_;
     };
-    
+
     /**
      * compare class template
      */

@@ -1,25 +1,25 @@
 /**
    dtl-1.14 -- Diff Template Library
-   
+
    In short, Diff Template Library is distributed under so called "BSD license",
-   
+
    Copyright (c) 2008-2011 Tatsuhiko Kubo <cubicdaiya@gmail.com>
    All rights reserved.
-   
+
    Redistribution and use in source and binary forms, with or without modification,
    are permitted provided that the following conditions are met:
-   
+
    * Redistributions of source code must retain the above copyright notice,
    this list of conditions and the following disclaimer.
-   
+
    * Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
-   
+
    * Neither the name of the authors nor the names of its contributors
-   may be used to endorse or promote products derived from this software 
+   may be used to endorse or promote products derived from this software
    without specific prior written permission.
-   
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -39,7 +39,7 @@
 #define DTL_DIFF_H
 
 namespace dtl {
-    
+
     /**
      * diff class template
      * sequence must support random_access_iterator.
@@ -69,68 +69,68 @@ namespace dtl {
         comparator         cmp;
     public :
         Diff () {}
-        
-        Diff (const sequence& a, 
+
+        Diff (const sequence& a,
               const sequence& b) : A(a), B(b) {
             init();
         }
-        
-        Diff (const sequence& a, 
-              const sequence& b, 
+
+        Diff (const sequence& a,
+              const sequence& b,
               const comparator& comp) : A(a), B(b), cmp(comp) {
             init();
         }
-        
+
         ~Diff() {}
-        
+
         long long getEditDistance () const {
             return editDistance;
         }
-        
+
         Lcs< elem > getLcs () const {
             return lcs;
         }
-        
+
         elemVec getLcsVec () const {
             return lcs.getSequence();
         }
-        
+
         Ses< elem > getSes () const {
             return ses;
         }
-        
+
         uniHunkVec getUniHunks () const {
             return uniHunks;
         }
-        
+
         bool isHuge () const {
             return huge;
         }
-        
+
         void onHuge () {
             this->huge = true;
         }
-        
+
         void offHuge () {
             this->huge = false;
         }
-        
+
         bool isUnserious () const {
             return unserious;
         }
-        
+
         void onUnserious () {
             this->unserious = true;
         }
-        
+
         void offUnserious () {
             this->unserious = false;
         }
-        
+
         void onOnlyEditDistance () {
             this->onlyEditDistance = true;
         }
-        
+
         /**
          * patching with Unified Format Hunks
          */
@@ -175,11 +175,11 @@ namespace dtl {
                 }
                 shunk.clear();
             }
-            
+
             sequence patchedSeq(seqLst.begin(), seqLst.end());
             return patchedSeq;
         }
-        
+
         /**
          * patching with Shortest Edit Script
          */
@@ -206,18 +206,18 @@ namespace dtl {
             sequence patchedSeq(seqLst.begin(), seqLst.end());
             return patchedSeq;
         }
-        
+
         /**
          * compose Longest Common Subsequence and Shortest Edit Script.
          * The algorithm implemented here is based on "An O(NP) Sequence Comparison Algorithm"
          * described by Sun Wu, Udi Manber and Gene Myers
          */
         void compose() {
-            
+
             if (isHuge()) {
                 pathCordinates.reserve(MAX_CORDINATES_SIZE);
             }
-            
+
             long long p = -1;
             fp = new long long[M + N + 3];
             fill(&fp[0], &fp[M + N + 3], -1);
@@ -234,25 +234,25 @@ namespace dtl {
                 }
                 fp[delta+offset] = snake(static_cast<long long>(delta), fp[delta-1+offset]+1, fp[delta+1+offset]);
             } while (fp[delta+offset] != static_cast<long long>(N) && pathCordinates.size() < MAX_CORDINATES_SIZE);
-            
+
             editDistance += static_cast<long long>(delta) + 2 * p;
             long long r = path[delta+offset];
             P cordinate;
             editPathCordinates epc(0);
-            
+
             // only recoding editdistance
             if (onlyEditDistance) {
                 delete[] this->fp;
                 return;
             }
-            
+
             while(r != -1) {
                 cordinate.x = pathCordinates[(size_t)r].x;
                 cordinate.y = pathCordinates[(size_t)r].y;
                 epc.push_back(cordinate);
                 r = pathCordinates[(size_t)r].k;
             }
-            
+
             // record Longest Common Subsequence & Shortest Edit Script
             if (!recordSequence(epc)) {
                 pathCordinates.resize(0);
@@ -271,11 +271,11 @@ namespace dtl {
             sesElemVec ses_v = ses.getSequence();
             for_each(ses_v.begin(), ses_v.end(), ChangePrinter< sesElem, stream >(out));
         }
-        
+
         void printSES (tostream& out = tcout) const {
             printSES< tostream >(out);
         }
-        
+
         /**
          * print difference with given SES
          */
@@ -284,11 +284,11 @@ namespace dtl {
             sesElemVec ses_v = s.getSequence();
             for_each(ses_v.begin(), ses_v.end(), ChangePrinter< sesElem, stream >(out));
         }
-        
+
         static void printSES (const Ses< elem >& s, ostream& out = tcout) {
             printSES< ostream >(s, out);
         }
-        
+
         /**
          * print difference between A and B with the format such as Unified Format
          */
@@ -296,11 +296,11 @@ namespace dtl {
         void printUnifiedFormat (stream& out) const {
             for_each(uniHunks.begin(), uniHunks.end(), UniHunkPrinter< sesElem, stream >(out));
         }
-        
+
         void printUnifiedFormat (ostream& out = tcout) const {
             printUnifiedFormat< ostream >(out);
         }
-        
+
         /**
          * print unified format difference with given unified format hunks
          */
@@ -331,10 +331,10 @@ namespace dtl {
             uniHunk< sesElem > hunk;
             sesElemVec         adds;
             sesElemVec         deletes;
-            
+
             isMiddle = isAfter = false;
             a = b = c = d = 0;
-            
+
             for (sesElemVec_iter it=ses_v.begin();it!=ses_v.end();++it, ++l_cnt) {
                 e = it->first;
                 einfo = it->second;
@@ -412,8 +412,8 @@ namespace dtl {
                     }
                     if (static_cast<long long>(common[0].size()) >= DTL_SEPARATE_SIZE) {
                         long long c0size = static_cast<long long>(common[0].size());
-                        rotate(common[0].begin(), 
-                               common[0].begin() + (size_t)c0size - DTL_SEPARATE_SIZE, 
+                        rotate(common[0].begin(),
+                               common[0].begin() + (size_t)c0size - DTL_SEPARATE_SIZE,
                                common[0].end());
                         for (long long i=0;i<c0size - DTL_SEPARATE_SIZE;++i) {
                             common[0].pop_back();
@@ -444,7 +444,7 @@ namespace dtl {
                 }
             }
         }
-        
+
         /**
          * compose ses from stream
          */
@@ -495,7 +495,7 @@ namespace dtl {
             onlyEditDistance = false;
             fp               = NULL;
         }
-        
+
         /**
          * search shortest path and record the path
          */
@@ -506,16 +506,16 @@ namespace dtl {
             while ((size_t)x < M && (size_t)y < N && cmp.impl(A[(size_t)x], B[(size_t)y])) {
                 ++x;++y;
             }
-            
+
             path[(size_t)k+offset] = static_cast<long long>(pathCordinates.size());
             if (!onlyEditDistance) {
                 P p;
                 p.x = x;p.y = y;p.k = r;
-                pathCordinates.push_back(p);      
+                pathCordinates.push_back(p);
             }
             return y;
         }
-        
+
         /**
          * record SES and LCS
          */
@@ -560,7 +560,7 @@ namespace dtl {
                 }
                 if (i == 0) complete = true;
             }
-            
+
             if (x_idx > static_cast<long long>(M) && y_idx > static_cast<long long>(N)) {
                 // all recording success
             } else {
@@ -575,7 +575,7 @@ namespace dtl {
                     }
                     return true;
                 }
-                
+
                 // decent difference
                 sequence A_(A.begin() + (size_t)x_idx - 1, A.end());
                 sequence B_(B.begin() + (size_t)y_idx - 1, B.end());
@@ -593,7 +593,7 @@ namespace dtl {
             }
             return true;
         }
-        
+
         /**
          * record odd sequence to ses
          */
@@ -607,7 +607,7 @@ namespace dtl {
             ses.addSequence(*it, idx, 0, et);
             ++editDistance;
         }
-        
+
         /**
          * join ses vectors
          */
@@ -616,9 +616,9 @@ namespace dtl {
                 for (sesElemVec_iter vit=s2.begin();vit!=s2.end();++vit) {
                     s1.push_back(*vit);
                 }
-            }      
+            }
         }
-        
+
         /**
          * check sequence is replaced each other
          */
