@@ -30,23 +30,21 @@
 
 // Modifiez les définitions suivantes si vous devez cibler une plate-forme avant celles spécifiées ci-dessous.
 // Reportez-vous à MSDN pour obtenir les dernières informations sur les valeurs correspondantes pour les différentes plates-formes.
-#ifndef WINVER				// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.
-#define WINVER 0x0501		// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
-#endif
+#ifndef WINVER
+  #ifdef _DEBUG
+	#define WINVER _WIN32_WINNT_VISTA	// Autorise l'utilisation des fonctionnalités spécifiques à Windows Vista ou version ultérieure.
+  #else // _DEBUG
+	#define WINVER _WIN32_WINNT_WINXP	// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.
+  #endif // _DEBUG
+#endif // WINVER						// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
 
-#ifndef _WIN32_WINNT		// Autorise l'utilisation des fonctionnalités spécifiques à Windows XP ou version ultérieure.
-#define _WIN32_WINNT 0x0501	// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions de Windows.
-#endif
+#define _WIN32_WINNT WINVER
 
-#ifndef _WIN32_WINDOWS		// Autorise l'utilisation des fonctionnalités spécifiques à Windows 98 ou version ultérieure.
-#define _WIN32_WINDOWS 0x0410 // Attribuez la valeur appropriée à cet élément pour cibler Windows Me ou version ultérieure.
-#endif
+#ifndef _WIN32_IE			
+	#define _WIN32_IE _WIN32_IE_IE60	// Autorise l'utilisation des fonctionnalités spécifiques à Internet Explorer 6.0 ou version ultérieure.
+#endif									// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions d'Internet Explorer.
 
-#ifndef _WIN32_IE			// Autorise l'utilisation des fonctionnalités spécifiques à Internet Explorer 6.0 ou version ultérieure.
-#define _WIN32_IE 0x0600	// Attribuez la valeur appropriée à cet élément pour cibler d'autres versions d'Internet Explorer.
-#endif
-
-// #define WIN32_LEAN_AND_MEAN		// Exclure les en-têtes Windows rarement utilisés
+// #define WIN32_LEAN_AND_MEAN			// Exclure les en-têtes Windows rarement utilisés
 
 #define USE_SHARED_PTR 1
 
@@ -69,8 +67,14 @@
 
 using namespace std;
 
+#include "../config.h"
 #include "utils.h"
 #include "rctutils.h"
 #include "console_select.h"
 #include "mpeg2defs.h"
 #include "shared_ptr_ptvm.h"
+
+#if _MSC_VER >= 1900
+	// Nécessaire à partir de C++1 (VS 2015 et +)
+	#pragma comment (lib, "legacy_stdio_definitions.lib")
+#endif	// _MSC_VER
