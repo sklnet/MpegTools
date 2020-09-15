@@ -70,7 +70,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     ICON            IDI_TSMERGER,IDC_MYICON,7,7,16,16
     CTEXT           "…",IDC_VERSION,55,10,119,16,SS_NOPREFIX
-    CTEXT           "Copyright Gingko © 2011",IDC_STATIC,48,32,132,8
+    CTEXT           "Copyright Gingko © 2011-2020",IDC_STATIC,48,32,132,8
     RTEXT           "Released under",IDC_STATIC,66,41,53,8
     CTEXT           "GPL",IDC_LICENSE_URL,122,41,14,8
     LTEXT           "licence",IDC_STATIC,138,41,25,8

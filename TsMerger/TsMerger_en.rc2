@@ -50,7 +50,7 @@ BEGIN
             VALUE "FileDescription", "TsMerger"
             VALUE "FileVersion", PRODUCT_VERSION_STR
             VALUE "InternalName", "PTvM TsMerger"
-            VALUE "LegalCopyright", "Copyright (C) 2011"
+            VALUE "LegalCopyright", "Copyright © 2011-2020"
             VALUE "OriginalFilename", "TsMerger.exe"
             VALUE "ProductName", "PTvM TsMerger"
             VALUE "ProductVersion", PRODUCT_VERSION_STR

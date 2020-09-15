@@ -70,7 +70,7 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     ICON            IDI_TSCHECKER,IDC_MYICON,7,7,16,16
     CTEXT           "…",IDC_VERSION,55,10,119,16,SS_NOPREFIX
-    CTEXT           "Copyright Gingko © 2011",IDC_STATIC,48,32,132,8
+    CTEXT           "Copyright Gingko © 2011-2020",IDC_STATIC,48,32,132,8
     RTEXT           "Publié sous licence",IDC_STATIC,72,41,65,8
     LTEXT           "GPL",IDC_LICENSE_URL,140,41,16,8
     CTEXT           "Site web de l'éditeur",IDC_WEBSITE_URL,54,51,120,8

@@ -50,7 +50,7 @@ BEGIN
             VALUE "FileDescription", "TsChecker"
             VALUE "FileVersion", PRODUCT_VERSION_STR
             VALUE "InternalName", "PTvM TsChecker"
-            VALUE "LegalCopyright", "Copyright (C) 2011"
+            VALUE "LegalCopyright", "Copyright © 2011-2020"
             VALUE "OriginalFilename", "TsChecker.exe"
             VALUE "ProductName", "PTvM TsChecker"
             VALUE "ProductVersion", PRODUCT_VERSION_STR
