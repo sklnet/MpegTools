@@ -143,13 +143,15 @@ public:
 	TS_pack_list		vData;			//!< Groupe de paquets TS lus (normalement délimités par ceux ayant des PCRs)
 	tstring				strFileId;		//!< Identification du fichier (texte)
 	INT					nIdt;			//!< Identification du fichier (numérique)
+	bool				bEof;
 
 	CTsGrpFileReader(CLogStreamBase & cLg, LPCTSTR pszFileName, tstring strFilId, INT nId = -1, UINT16 pcr_pref_pid = NO_PID) :
 		CTsFileReader(pszFileName, pcr_pref_pid),
 		cLog(cLg),
 		strFileId(strFilId),
 		nIdt(nId),
-		bRecyclePacket(false)
+		bRecyclePacket(false),
+		bEof(false)
 	{
 	}
 

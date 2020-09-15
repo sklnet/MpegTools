@@ -103,7 +103,7 @@ CCChecker::Result CTsFileReader::ReadPacket(TS_packet_Ex & sTs) throw(...)
 			sMm += sizeof(TS_packet);
 			if (sTs.hdr.pid == p_pid_NULL)	// Sauter les paquets nuls qui peuvent parfois avoir été laissés
 				continue;
-			break;
+			break;	// On a un paquet valide
 		}
 
 		if (++nCount > 10) {	// Au bout de 10 défauts, on laisse tomber
@@ -160,7 +160,7 @@ bool CTsGrpFileReader::LoadGroup() throw(...)
 	CCChecker::Result	sRes = ReadPacket(sTs);
 
 	if (sRes.eof())
-		return false;
+		return bEof = true, false;
 
 	if (vData.empty()) {
 		// Lecture jusqu'au premier timestamp
@@ -168,7 +168,7 @@ bool CTsGrpFileReader::LoadGroup() throw(...)
 			vData.Add(sTs);
 			sRes = ReadPacket(sTs);
 			if (sRes.eof())
-				return false;
+				return bEof = true, false;
 		} while (!sRes.haspcr());
 
 		vData.t_End = vData.t_Begin = t_LastPcr;
@@ -179,7 +179,7 @@ bool CTsGrpFileReader::LoadGroup() throw(...)
 		vData.Add(sTs);
 		sRes = ReadPacket(sTs);
 		if (sRes.eof())
-			return false;
+			return bEof = true, false;
 	} while (!sRes.haspcr());
 
 	vData.t_End = t_LastPcr;
@@ -273,40 +273,34 @@ CTsFileAnalyzer::Result CTsFileAnalyzer::Analyze()
 	TS_packet_Ex		sTs;
 	CCChecker::Result	sTsRes;
 	Result				sAnRes(strFileId);
-	UINT				nInx;
+	INT					nInx = 0;
+	UINT64				qwEndSeek	= qwFileSize - min(qwFileSize, MAX_PACKET_LOOP*sizeof(TS_packet));
 
 	reset();
 
 	try {
-		for (nInx=0; nInx < MAX_PACKET_LOOP; ++nInx) {
-			sTsRes = ReadPacket(sTs);
+		// Examiner les MAX_PACKET_LOOP premiers et derniers paquets
+		while (!(sTsRes = ReadPacket(sTs)).eof()) {
 			if (sTsRes.ePkErr != pe_NoError)
 				continue;
-			if (sTsRes.haspcr() && sAnRes.t_First == HIGHEST_PCR_OFFSET) {
-				sAnRes.t_First = t_LastPcr;
-				sAnRes.pcr_pid = pcr_pid;
+			if (sTsRes.haspcr()) {
+				if (sAnRes.t_First == HIGHEST_PCR_OFFSET) {
+					sAnRes.t_First = t_LastPcr;	// Retenir le premier PCR
+					sAnRes.pcr_pid = pcr_pid;	// Retenir aussi son PID
+				}
+				sAnRes.t_Last = t_LastPcr;	// Retenir le dernier PCR
 			}
+
+			// Retenir tous les PIDs trouvés
 			if (sTsRes.pid >= 0x20)
 				sAnRes.vPidList.RefPid(sTsRes.pid, sTsRes.ePcrState != CCChecker::ps_NoPcr);
 			else
 				sAnRes.vRootPids.RefPid(sTsRes.pid, false);
-		}
-		if (sAnRes.t_First != HIGHEST_PCR_OFFSET) {
-			if (qwFileSize >= MAX_PACKET_LOOP*sizeof(TS_packet)) {
-				seek(qwFileSize - MAX_PACKET_LOOP*sizeof(TS_packet), sMm);
-				while (!(sTsRes = ReadPacket(sTs)).eof()) {
-					if (sTsRes.ePkErr != pe_NoError)
-						continue;
-					if (sTsRes.haspcr())
-						sAnRes.t_Last = t_LastPcr;
-					if (sTsRes.pid >= 0x20)
-						sAnRes.vPidList.RefPid(sTsRes.pid, sTsRes.ePcrState != CCChecker::ps_NoPcr);
-					else
-						sAnRes.vRootPids.RefPid(sTsRes.pid, false);
-				}
-				if (sAnRes.t_Last != HIGHEST_PCR_OFFSET)
-					sAnRes.t_Duration = TIM_27M_Distance(sAnRes.t_First, sAnRes.t_Last);
-			}
+
+			// Une fois qu'on a passé les MAX_PACKET_LOOP premiers paquets, on se repositionne sur le début des
+			// MAX_PACKET_LOOP derniers paquets … sauf si le nombre total de paquets est inférieur à 2 × MAX_PACKET_LOOP
+			if (++nInx == MAX_PACKET_LOOP && qwEndSeek > fileoffset(sMm.ptr))
+				seek(qwEndSeek, sMm);
 		}
 	} catch(DWORD dwErr) {
 		tstringstream strmTmp;
@@ -316,6 +310,9 @@ CTsFileAnalyzer::Result CTsFileAnalyzer::Analyze()
 		MessageBox(NULL, strmTmp.str().c_str(),
 			_TL("Error during file analysis","Erreur durant l'analyse du fichier"), MB_ICONERROR|MB_OK);
 	}
+
+	if (sAnRes.t_First != HIGHEST_PCR_OFFSET && sAnRes.t_Last != HIGHEST_PCR_OFFSET)
+		sAnRes.t_Duration = TIM_27M_Distance(sAnRes.t_First, sAnRes.t_Last);
 
 	sAnRes.vPidList.sort();
 	sAnRes.vRootPids.sort();
