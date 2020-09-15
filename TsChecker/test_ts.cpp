@@ -126,10 +126,6 @@ DWORD CTestTsProcessor::ThreadProc()
 	return dwRes;
 }
 
-CTestTsProcessor::~CTestTsProcessor()
-{
-}
-
 // ====================================================================================
 // Paramètres en ligne de commande
 // ====================================================================================

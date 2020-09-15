@@ -209,7 +209,7 @@ void CTsCheckerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
 	WIN32_FILE_ATTRIBUTE_DATA sData;
 
 	if (GetFileAttributesEx(pszFileName, GetFileExInfoStandard, &sData)) {
-		LARGE_INTEGER	sSize = {sData.nFileSizeLow, sData.nFileSizeHigh};
+		LARGE_INTEGER	sSize = {sData.nFileSizeLow, static_cast<LONG>(sData.nFileSizeHigh)};
 		TCHAR			szWrk[64];
 
 		_stprintf_s(szWrk, _TL("Size = %s Kb","Taille = %s Ko"), thousandsSepFmt((sSize.QuadPart+0x200) / 0x400).c_str());

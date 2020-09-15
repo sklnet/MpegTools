@@ -92,7 +92,8 @@ public:
 	CTestTsProcessor(CLogStreamBase & cLg,
 		Params & sPrms, bool bDelOnExit);
 
-	~CTestTsProcessor();
+	~CTestTsProcessor() NOEXCEPT {
+		}
 };
 
 // ====================================================================================

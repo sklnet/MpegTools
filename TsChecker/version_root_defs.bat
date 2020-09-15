@@ -12,7 +12,7 @@ rem Tout changement dans le numéro de version devra se faire ici.
 rem Numéros majeur, mineur et "bug fix"
 set VMAJ=1
 set VMIN=0
-set VFIX=1
+set VFIX=2
 
 rem Suffixe éventuel (par exemple " RC")
 set VSFX=""
