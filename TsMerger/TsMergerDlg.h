@@ -101,18 +101,17 @@ class CTsMergerDialog :
 		}
 	};
 
-	CMergeTsProcessor::Params
-				sParms;
-	HWND		hLeftFile;
-	HWND		hRightFile;
-	HWND		hLeftList;
-	HWND		hRightList;
-	tofstream	cLog_fil;
-	CLogStream	cLog_merge;
-	CLogStream	cLog_out;
-	DWORD		dwThreadId;
-	HANDLE		hThreadHdl;
-	WORD		pcr_pid;
+	CMergeTsProcessor::Params	sParms;
+	HWND						hFiles[ID_FMAX];
+	HWND						hLeftList;
+	HWND						hRightList;
+	tofstream					cLog_fil;
+	CLogStream					cLog_merge;
+	CLogStream					cLog_out;
+	DWORD						dwThreadId;
+	HANDLE						hThreadHdl;
+	WORD						pcr_pid;
+	static CHAR					xlatf[4][4];	//!< Translations entre ordre des fichiers affichés et ordre des relations entre fichiers
 
 public:
 
@@ -124,18 +123,20 @@ public:
 	/// Constructeur :
 	CTsMergerDialog(CMergeTsProcessor::Params & sPrms);
 
+	void			Display1FileAnalysis(IdFile eFil, CTsFileAnalyzer::Result & sRes, UINT16 pcr_pref_pid = NO_PID);
 	void			DisplayFileAnalysis();
 	void			InitFile(HWND hCtl, UINT nInfoId, LPCTSTR pszFileName, LPCTSTR pszOtherFileName);
-	void			InitFile1() {
-						InitFile(hLeftFile, IDC_INFO1, sParms.strSrcFile1.c_str(), sParms.strSrcFile2.c_str()); }
-	void			InitFile2() {
-						InitFile(hRightFile, IDC_INFO2, sParms.strSrcFile2.c_str(), sParms.strSrcFile1.c_str()); }
+	void			InitFile(IdFile eFil) {
+						SendDlgItemMessage(hDlg, IDC_PROGRESS1+eFil, PBM_SETPOS, 0, 0);
+						InitFile(hFiles[eFil], IDC_INFO1+eFil, sParms.getSrcFile(eFil), sParms.getSrcFile(xlatf[eFil][0])); }
 
 	void			ShowFileInfo(UINT nId, LPCTSTR pszFileName);
 	void			ShowPctInfo(UINT nId, UINT nPct);
 	void			SetLogFile(LPCTSTR pszFileName);
 
-	void			GetDroppedFiles(HDROP hDropFiles, tstring & strFile1, tstring & strFile2);
+	vtstring		GetDroppedFiles(HDROP hDropFiles);
+	void			InitNewFiles(vtstring & vstrFiles, IdFile eFil);
+	void			GetDroppedFilesAndInit(HDROP hDropFiles, IdFile eFil);
 
 	void			LbCopy(HWND hCtl);
 
@@ -152,6 +153,8 @@ public:
 						return LbSubProc(sc.hSWnd, uMsg, wParam, lParam) ? 0 : sc.CallWindowProc(uMsg, wParam, lParam); }
 	virtual LRESULT SubProc(WinSubClass<SC_LBX2> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 						return LbSubProc(sc.hSWnd, uMsg, wParam, lParam) ? 0 : sc.CallWindowProc(uMsg, wParam, lParam); }
+
+	void			BrowseFile(IdFile eFil);
 
 	virtual INT_PTR DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam);
 

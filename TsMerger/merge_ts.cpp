@@ -181,7 +181,7 @@ CTsFileWriter::~CTsFileWriter()
 
 tstring	CMergeTsProcessor::Params::SuggestDstName()
 {
-	return MakeFileNameByLCS(strSrcFile1.c_str(), strSrcFile2.c_str());
+	return MakeFileNameByLCS(getSrcFile(0), getSrcFile(1));
 }
 
 /// Si le nom de fichier de destination n'a pas de chemin, lui en fournir un d'après
@@ -191,9 +191,11 @@ tstring CMergeTsProcessor::Params::CompleteDstName()
 	tstring strPath(ExtractPath(strDstFile.c_str()));
 
 	if (strPath.empty()) {
-		strPath = ExtractPath(strSrcFile1.c_str());
-		if (strPath.empty())
-			strPath = ExtractPath(strSrcFile2.c_str());
+		for (ITERATE_CONST_VECTOR(vstrSrcFiles, tstring, it)) {
+			strPath = ExtractPath(it->c_str());
+			if (! strPath.empty())
+				break;
+		}
 
 		if (!strPath.empty())
 			return strPath + strDstFile;
@@ -472,12 +474,10 @@ CMergeTsProcessor::CMergeTsProcessor(CLogStreamBase & cLog_mrg, CLogStreamBase &
 	WorkingThread(bDelOnExit),
 	cLog_merge(cLog_mrg),
 	cLog_out(cLog_o),
-	cMFil1(cLog_mrg, sPrms.strSrcFile1.c_str(), _TL("file #1","fichier 1"), ID_FIL1, pcr_pref_pid),
-	cMFil2(cLog_mrg, sPrms.strSrcFile2.c_str(), _TL("file #2","fichier 2"), ID_FIL2, pcr_pref_pid),
+	cMFil1(cLog_mrg, sPrms.getSrcFile(0), _TL("file #1","fichier 1"), ID_FIL1, pcr_pref_pid),
+	cMFil2(cLog_mrg, sPrms.getSrcFile(1), _TL("file #2","fichier 2"), ID_FIL2, pcr_pref_pid),
 	cOutF(cLog_o, sPrms.strDstFile.c_str()),
 	bUnionMode(sPrms.bUnion),
-	bEof1(false),
-	bEof2(false),
 	bMakeVrdPrj(sPrms.bMakeVrdPrj)
 {
 }
@@ -513,11 +513,11 @@ void CMergeTsProcessor::SyncLoad() throw(...)
 		// Time stamp manquant d'un côté ou de l'autre : on ajoute des données
 		// des deux côtés jusqu'à rencontrer une nouvelle coincidence
 		if (TIM_27M_Distance(cMFil1.vData.t_End, cMFil2.vData.t_End) > 0)
-			bEof1 = !cMFil1.LoadGroup();
+			cMFil1.LoadGroup();
 		else
-			bEof2 = !cMFil2.LoadGroup();
+			cMFil2.LoadGroup();
 
-		if (bEof1 || bEof2)
+		if (cMFil1.bEof || cMFil2.bEof)
 			return;
 	}
 
@@ -579,30 +579,30 @@ void CMergeTsProcessor::Process() throw(...)
 	cMFil1.reset();
 	cMFil2.reset();
 
-	bEof1 = !cMFil1.LoadGroup();
-	bEof2 = !cMFil2.LoadGroup();
+	cMFil1.LoadGroup();
+	cMFil2.LoadGroup();
 
 	// Ajustement de temps : prendre le marqueur de temps le plus petit comme base temporelle
 	// pour le début du fichier.
 	cOutF.time_adj(cMFil1.vData.t_Begin);
 	cOutF.time_adj(cMFil2.vData.t_Begin);
 
-	if (!bEof1 && !bEof2) {
+	if (!cMFil1.bEof && !cMFil2.bEof) {
 		if (TIM_27M_Distance(cMFil1.vData.t_End, cMFil2.vData.t_Begin) > 0) {
-			if (!bEof1)
-				bEof1 = ProcessBegin(cMFil1, cMFil2);
+			if (!cMFil1.bEof)
+				ProcessBegin(cMFil1, cMFil2);
 		} else if (TIM_27M_Distance(cMFil2.vData.t_End, cMFil1.vData.t_Begin) > 0) {
-			if (!bEof2)
-				bEof2 = ProcessBegin(cMFil2, cMFil1);
+			if (!cMFil2.bEof)
+				ProcessBegin(cMFil2, cMFil1);
 		}
-		if (!bEof1 && !bEof2) {
+		if (!cMFil1.bEof && !cMFil2.bEof) {
 			cLog_merge
 				<< _TL("## Common part found at ","## Partie commune trouvée à ")
 				<< Clk27M(min<TIM_27M>(cOutF.time_adj(cMFil1.vData.t_Begin), cOutF.time_adj(cMFil2.vData.t_Begin)))
 				<< endl;
 			SyncLoad();
 			Merge();
-			if (!bEof1 && !bEof2)
+			if (!cMFil1.bEof && !cMFil2.bEof)
 				cLog_merge
 					<< _TL("## Now actively merging.","## Fusion active en cours.") << endl;
 		} else {
@@ -614,10 +614,10 @@ void CMergeTsProcessor::Process() throw(...)
 
 	// Répéter tant qu'aucun des deux fichiers n'est à sa fin
 	for (;;) {
-		bEof1 = !cMFil1.LoadGroup();
-		bEof2 = !cMFil2.LoadGroup();
+		cMFil1.LoadGroup();
+		cMFil2.LoadGroup();
 
-		if (bEof1 || bEof2)
+		if (cMFil1.bEof || cMFil2.bEof)
 			break;
 
 		SyncLoad();
@@ -631,10 +631,10 @@ void CMergeTsProcessor::Process() throw(...)
 
 	Merge();
 
-	if (bEof1)
-		bEof2 = ProcessEnd(cMFil2, cMFil1);
-	else if (bEof2)
-		bEof1 = ProcessEnd(cMFil1, cMFil2);
+	if (cMFil1.bEof)
+		ProcessEnd(cMFil2, cMFil1);
+	else if (cMFil2.bEof)
+		ProcessEnd(cMFil1, cMFil2);
 
 	//LogTsTime(cLog_merge, _TL("end ","fin"), cMFil1.vData.t_End, cMFil1.strFileId.c_str());
 	//LogTsTime(cLog_merge, _TL("end ","fin"), cMFil2.vData.t_End, cMFil2.strFileId.c_str());
@@ -732,10 +732,8 @@ bool CTsMergerCmdLine::ProcessArg(tstring & strArg)
 				return false;
 			}
 		}
-	} else if (strSrcFile1.empty())
-		strSrcFile1 = strArg;
-	else if (strSrcFile2.empty())
-		strSrcFile2 = strArg;
+	} else if (vstrSrcFiles.size() < 2)
+		vstrSrcFiles.push_back(strArg);
 	else if (strDstFile.empty())
 		strDstFile = strArg;
 	else

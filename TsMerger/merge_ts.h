@@ -55,8 +55,16 @@ enum WM_APP_Messages
 	WM_APP_RESUMED
 };
 
-#define ID_FIL1 1	//!< Identifiant pour le fichier 1
-#define ID_FIL2 2	//!< Identifiant pour le fichier 2
+enum IdFile
+{
+	ID_FIL1,	//!< Identifiant pour le fichier 1
+	ID_FIL2,	//!< Identifiant pour le fichier 2
+	ID_FMAX,	//!< Nombre de fichiers max
+	ID_FERR = -1
+};
+
+inline IdFile & operator ++ (IdFile & val) {
+						val = static_cast<IdFile>(val + 1); return val;	}
 
 // ====================================================================================
 
@@ -98,8 +106,6 @@ class CMergeTsProcessor : public WorkingThread
 	CTsGrpFileReader	cMFil2;
 	CTsFileWriter		cOutF;
 	bool				bUnionMode;
-	bool				bEof1;
-	bool				bEof2;
 	bool &				bMakeVrdPrj;
 
 	virtual DWORD	ThreadProc();
@@ -126,12 +132,11 @@ public:
 
 	struct Params
 	{
-		tstring	strSrcFile1;	//!< Nom du premier fichier source
-		tstring	strSrcFile2;	//!< Nom du second fichier source
-		tstring	strDstFile;		//!< Nom du fichier destination
-		bool	bUnion;			//!< \p true si mode union (sinon, mode intersection)
-		bool	bMakeVrdPrj;	//!< \p true si fichier projet VideoRedo à générer (peut être modifié en cours de traitement)
-		bool	bBatch;
+		vtstring	vstrSrcFiles;	//!< Noms des fichiers source
+		tstring		strDstFile;		//!< Nom du fichier destination
+		bool		bUnion;			//!< \p true si mode union (sinon, mode intersection)
+		bool		bMakeVrdPrj;	//!< \p true si fichier projet VideoRedo à générer (peut être modifié en cours de traitement)
+		bool		bBatch;
 
 		Params() :
 			bUnion(true),
@@ -139,6 +144,21 @@ public:
 			bBatch(false)
 		{
 		}
+
+		LPCTSTR	getSrcFile(int num) const {
+					if (num < 0 || num >= static_cast<int>(vstrSrcFiles.size()))
+						return _T("");
+					return vstrSrcFiles[num].c_str(); }
+
+		void	setSrcFile(int num, tstring strFile) {
+					if (num >= static_cast<int>(vstrSrcFiles.size()))
+						vstrSrcFiles.resize(num+1);
+					vstrSrcFiles[num] = strFile; }
+
+		bool	isSrcEmpty(int num) const {
+					if (num < 0 || num >= static_cast<int>(vstrSrcFiles.size()))
+						return true;
+					return vstrSrcFiles[num].empty(); }
 
 		tstring	SuggestDstName();
 
@@ -149,6 +169,9 @@ public:
 
 	CMergeTsProcessor(CLogStreamBase & cLog_mrg, CLogStreamBase & cLog_o,
 		Params & sPrms, UINT16 pcr_pref_pid, bool bDelOnExit);
+
+	~CMergeTsProcessor() NOEXCEPT {
+		}
 };
 
 // ====================================================================================

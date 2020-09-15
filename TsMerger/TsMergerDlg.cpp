@@ -200,12 +200,18 @@ INT_PTR CAboutDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 // Boîte de dialogue principale de l'application
 // ====================================================================================
 
+/// Translations entre ordre des fichiers affichés et ordre des relations entre fichiers
+CHAR CTsMergerDialog::xlatf[4][4] = {
+		{ID_FIL1, ID_FIL2, ID_FERR, ID_FERR},	// ID_FERR = hors limites
+		{ID_FIL2, ID_FIL1, ID_FERR, ID_FERR},
+		{ID_FERR, ID_FERR, ID_FERR, ID_FERR},
+		{ID_FERR, ID_FERR, ID_FERR, ID_FERR}
+	};
+
 /// Constructeur :
 CTsMergerDialog::CTsMergerDialog(CMergeTsProcessor::Params & sPrms) :
 	CModalDialogBase(IDD_TSMERGER),
 	sParms(sPrms),
-	hLeftFile(NULL),
-	hRightFile(NULL),
 	hLeftList(NULL),
 	hRightList(NULL),
 	cLog_merge(hLeftList, cLog_fil),
@@ -214,6 +220,8 @@ CTsMergerDialog::CTsMergerDialog(CMergeTsProcessor::Params & sPrms) :
 	hThreadHdl(NULL),
 	pcr_pid(NO_PID)
 {
+	for (IdFile eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+		hFiles[eFil] = NULL;
 }
 
 void CTsMergerDialog::ShowPctInfo(UINT nId, UINT nPct)
@@ -229,7 +237,7 @@ void CTsMergerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
 	WIN32_FILE_ATTRIBUTE_DATA sData;
 
 	if (GetFileAttributesEx(pszFileName, GetFileExInfoStandard, &sData)) {
-		LARGE_INTEGER	sSize = {sData.nFileSizeLow, sData.nFileSizeHigh};
+		LARGE_INTEGER	sSize = {sData.nFileSizeLow, static_cast<LONG>(sData.nFileSizeHigh)};
 		TCHAR			szWrk[64];
 
 		_stprintf_s(szWrk, _TL("Size = %s Kb","Taille = %s Ko"), thousandsSepFmt((sSize.QuadPart+0x200) / 0x400).c_str());
@@ -237,9 +245,10 @@ void CTsMergerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
 	}
 }
 
-void CTsMergerDialog::GetDroppedFiles(HDROP hDropFiles, tstring & strFile1, tstring & strFile2)
+vtstring CTsMergerDialog::GetDroppedFiles(HDROP hDropFiles)
 {
-	TCHAR	szFile[MAX_PATH];
+	vtstring	vstrRes;
+	TCHAR		szFile[MAX_PATH];
 
 	// on récupère le nombre de fichiers
 	UINT	nCount = DragQueryFile(hDropFiles, 0xffffffff, NULL, 0);
@@ -247,18 +256,10 @@ void CTsMergerDialog::GetDroppedFiles(HDROP hDropFiles, tstring & strFile1, tstr
 
 	for (nInx = 0; nInx < nCount; ++nInx) {
 		DragQueryFile(hDropFiles, nInx, szFile, _countof(szFile));
-		if (_tcsicmp(PathFindExtension(szFile), TEXT(".ts")) == 0) {
-			strFile1 = szFile;
-			break;
-		}
-	}
+		if (_tcsicmp(PathFindExtension(szFile), TEXT(".ts")) != 0)
+			continue;
 
-	for (++nInx; nInx < nCount; ++nInx) {
-		DragQueryFile(hDropFiles, nInx, szFile, _countof(szFile));
-		if (_tcsicmp(PathFindExtension(szFile), TEXT(".ts")) == 0) {
-			strFile2 = szFile;
-			break;
-		}
+		vstrRes.push_back(szFile);
 	}
 
 	// on a fini de récupérer les fichiers
@@ -268,27 +269,67 @@ void CTsMergerDialog::GetDroppedFiles(HDROP hDropFiles, tstring & strFile1, tstr
 
 	// Vider le nom du fichier de sortie par défaut
 	sParms.strDstFile.clear();
+	return vstrRes;
+}
+
+void CTsMergerDialog::InitNewFiles(vtstring & vstrFiles, IdFile eFil)
+{
+	INT		nInx;
+	INT		nMax = vstrFiles.size();
+	IdFile	eDst;
+
+	// Vérifier qu'on ne va pas comparer un fichier à lui-même
+	for (nInx = 0; nInx < nMax; ++nInx) {
+		eDst = static_cast<IdFile>(xlatf[eFil][nInx]);
+
+		if (eDst == ID_FERR)
+			break;
+
+		for (IdFile eFl2 = ID_FIL1; eFl2 < ID_FMAX; ++eFl2) {
+			if (eFl2 == eDst)
+				continue;
+
+			const tstring & strFile = vstrFiles[nInx];
+
+			if (strFile == sParms.getSrcFile(eFl2)) {
+				TCHAR szMsgBox[256];
+
+				_stprintf_s(szMsgBox,
+					_TL("The file:\n\n“%s”\n\n… is already set as file #%i.", "Le fichier :\n\n“%s”\n\n… est déjà spécifié comme fichier %i."),
+					strFile.c_str(), eFl2+1);
+				MessageBox(hDlg, szMsgBox,
+					_TL("File Error", "Erreur de fichier"), MB_ICONERROR|MB_OK);
+				return;
+			}
+		}
+	}
+
+	// Assigner tous les fichiers entrée à la source appropriée
+	for (nInx = 0; nInx < nMax; ++ nInx) {
+		eDst = static_cast<IdFile>(xlatf[eFil][nInx]);
+
+		if (eDst == ID_FERR)
+			break;
+		sParms.setSrcFile(eDst, vstrFiles[nInx]);
+		InitFile(eDst);
+	}
+
+	DisplayFileAnalysis();
+	sParms.strDstFile.clear();
+}
+
+void CTsMergerDialog::GetDroppedFilesAndInit(HDROP hDropFiles, IdFile eFil)
+{
+	vtstring vstrFiles = GetDroppedFiles(hDropFiles);
+
+	InitNewFiles(vstrFiles, eFil);
 }
 
 /// Traitement des messages du contrôle de nom de fichier 1 surclassé
 LRESULT CTsMergerDialog::SubProc(WinSubClass<SC_FIL1> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_DROPFILES) {
-		tstring strFile1, strFile2;
-
-		GetDroppedFiles((HDROP)wParam, strFile1, strFile2);
-		if (!strFile1.empty()) {
-			if (!strFile2.empty()) {
-				sParms.strSrcFile1 = strFile1;
-				sParms.strSrcFile2 = strFile2;
-				InitFile1();
-				InitFile2();
-			} else if (strFile1 != sParms.strSrcFile2) {
-				sParms.strSrcFile1 = strFile1;
-				InitFile1();
-			}
-		}
-		DisplayFileAnalysis();
+		GetDroppedFilesAndInit((HDROP)wParam, SC_FIL1);
 		return 0;
 	}
 	return sc.CallWindowProc(uMsg, wParam, lParam);
@@ -298,21 +339,7 @@ LRESULT CTsMergerDialog::SubProc(WinSubClass<SC_FIL1> & sc, UINT uMsg, WPARAM wP
 LRESULT CTsMergerDialog::SubProc(WinSubClass<SC_FIL2> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_DROPFILES) {
-		tstring strFile1, strFile2;
-
-		GetDroppedFiles((HDROP)wParam, strFile1, strFile2);
-		if (!strFile1.empty()) {
-			if (!strFile2.empty()) {
-				sParms.strSrcFile2 = strFile1;
-				sParms.strSrcFile1 = strFile2;
-				InitFile1();
-				InitFile2();
-			} else if (strFile1 != sParms.strSrcFile1) {
-				sParms.strSrcFile2 = strFile1;
-				InitFile2();
-			}
-		}
-		DisplayFileAnalysis();
+		GetDroppedFilesAndInit((HDROP)wParam, SC_FIL2);
 		return 0;
 	}
 	return sc.CallWindowProc(uMsg, wParam, lParam);
@@ -444,65 +471,61 @@ void CTsMergerDialog::SetLogFile(LPCTSTR pszFileName)
 		cLog_fil.open(pszFileName);
 }
 
+void CTsMergerDialog::Display1FileAnalysis(IdFile eFil, CTsFileAnalyzer::Result & sRes, UINT16 pcr_pref_pid)
+{
+	TCHAR szTxt[64];
+
+	if (!sParms.isSrcEmpty(eFil)) {
+		_stprintf_s(szTxt, _TL("file #%i", "fichier %i"), eFil+1);
+		sRes = CTsFileAnalyzer(sParms.getSrcFile(eFil), szTxt, pcr_pref_pid).Analyze();
+
+		if (pcr_pref_pid != NO_PID && !sRes.pcr_ok()) {
+			// En cas d'échec du 2nd fichier, les fichiers ne sont pas compatibles. On réanalyse néanmoins, pour
+			// affichage, le second fichier SANS obliger à utiliser un PCR PID quelconque.
+			sRes = CTsFileAnalyzer(sParms.getSrcFile(eFil), szTxt).Analyze();
+		}
+		_stprintf_s(szTxt, _TL("Information about file #%i:", "Informations pour le fichier %i :"), eFil+1);
+		cLog_merge << szTxt << endl;
+		sRes.Output(cLog_merge);
+	}
+
+	SendDlgItemMessage(hDlg, IDC_PROGRESS1+eFil, PBM_SETPOS, 0, 0);
+}
+
 void CTsMergerDialog::DisplayFileAnalysis()
 {
 	SendMessage(hLeftList, LB_RESETCONTENT, 0, NULL);
 	SendMessage(hRightList, LB_RESETCONTENT, 0, NULL);
 
-	CTsFileAnalyzer::Result	sRes1;
-	CTsFileAnalyzer::Result	sRes2;
+	CTsFileAnalyzer::Result	sRes[ID_FMAX];
 
 	pcr_pid = NO_PID;
 
 	// Vérification du fichier de gauche
-	if (!sParms.strSrcFile1.empty()) {
-
-		sRes1 = CTsFileAnalyzer(sParms.strSrcFile1.c_str(),
-								tstring(_TL("file #1","fichier 1"))).Analyze();
-		cLog_merge << _TL("Information about file #1","Informations pour le fichier 1") << endl;
-		sRes1.Output(cLog_merge);
-	}
+	Display1FileAnalysis(ID_FIL1, sRes[ID_FIL1]);
 
 	// Vérification du fichier de droite, en l'obligeant à utiliser le même PCR PID que le fichier
 	// de gauche
-	if (!sParms.strSrcFile2.empty()) {
-		CTsFileAnalyzer			cAna(sParms.strSrcFile2.c_str(),
-									 tstring(_TL("file #2","fichier 2")), sRes1.pcr_pid);
-
-		sRes2 = CTsFileAnalyzer(sParms.strSrcFile2.c_str(),
-								tstring(_TL("file #2","fichier 2")), sRes1.pcr_pid).Analyze();
-
-		if (!sRes2.pcr_ok()) {
-			// En cas d'échec, les fichiers ne sont pas compatibles. On réanalyse néanmoins, pour
-			// affichage, le second fichier SANS obliger à utiliser un PCR PID quelconque.
-			sRes2 = CTsFileAnalyzer(sParms.strSrcFile2.c_str(), sRes2.strFileId).Analyze();
-		}
-		cLog_merge << _TL("Information about file #2","Informations pour le fichier 2") << endl;
-		sRes2.Output(cLog_merge);
-	}
-
-	SendDlgItemMessage(hDlg, IDC_PROGRESS1, PBM_SETPOS, 0, 0);
-	SendDlgItemMessage(hDlg, IDC_PROGRESS2, PBM_SETPOS, 0, 0);
+	Display1FileAnalysis(ID_FIL2, sRes[ID_FIL2], sRes[ID_FIL1].pcr_pid);
 
 	bool bTwoRelatedFiles = false;
 
-	if (!sParms.strSrcFile1.empty() && !sParms.strSrcFile2.empty()) {
-		if (sRes1.pcr_pid == sRes2.pcr_pid) {
-			if (!sRes1.vPidList.empty() && !sRes2.vPidList.empty()) {
-				pcr_pid = sRes1.pcr_pid;
-				dtl::Diff<CTsFileAnalyzer::PidInfo, CTsFileAnalyzer::PidList> d(sRes1.vPidList, sRes2.vPidList);
+	if (!sParms.isSrcEmpty(ID_FIL1) && !sParms.isSrcEmpty(ID_FIL2)) {
+		if (sRes[ID_FIL1].pcr_pid == sRes[1].pcr_pid) {
+			if (!sRes[ID_FIL1].vPidList.empty() && !sRes[1].vPidList.empty()) {
+				pcr_pid = sRes[ID_FIL1].pcr_pid;
+				dtl::Diff<CTsFileAnalyzer::PidInfo, CTsFileAnalyzer::PidList> d(sRes[0].vPidList, sRes[1].vPidList);
 
 				d.compose();
 
 				// editDistance
-				UINT	nSiz1		= (UINT)sRes1.vPidList.size();
-				UINT	nSiz2		= (UINT)sRes2.vPidList.size();
-				UINT	nDistance	= (UINT)d.getEditDistance();
+				UINT	nSiz[ID_FMAX]	= {(UINT)sRes[ID_FIL1].vPidList.size(), (UINT)sRes[ID_FIL2].vPidList.size()};
+				UINT	nDistance		= (UINT)d.getEditDistance();
 
-				if (nSiz1 == nSiz2 && nDistance == 0) {
+				if (nSiz[ID_FIL1] == nSiz[ID_FIL2] && nDistance == 0) {
 					bTwoRelatedFiles = true;
 				} else {
-					if (((nDistance*8) / max(nSiz1, nSiz2)) <=4) {
+					if (((nDistance*8) / max(nSiz[ID_FIL1], nSiz[ID_FIL2])) <=4) {
 						cLog_merge << endl
 							<<	_TL("The structures of these files are similar but not identical.",
 									"Les structures de ces fichiers sont similaires mais pas identiques.") << endl
@@ -521,12 +544,12 @@ void CTsMergerDialog::DisplayFileAnalysis()
 				<<	_TL("These files are not related and cannot be merged.",
 						"Ces fichiers n'ont pas de relation et ne peuvent pas être fusionnés.") << endl;
 		} else {
-			INT64 nDist = TIM_27M_Distance(sRes1.t_First, sRes2.t_First);
+			INT64 nDist = TIM_27M_Distance(sRes[ID_FIL1].t_First, sRes[ID_FIL2].t_First);
 
 			if (nDist > 0) {
-				sRes1.OutputRelation(cLog_merge, sRes2);
+				sRes[ID_FIL1].OutputRelation(cLog_merge, sRes[ID_FIL2]);
 			} else {
-				sRes2.OutputRelation(cLog_merge, sRes1);
+				sRes[ID_FIL2].OutputRelation(cLog_merge, sRes[ID_FIL1]);
 			}
 		}
 	}
@@ -556,15 +579,16 @@ void CTsMergerDialog::StartMerging()
 
 	SetLogFile(ChangeExtension(sParms.strDstFile.c_str(), _T(".txt")).c_str());
 
-	cLog_fil << _TL(
-		"## Source File #1 = ",
-		"## Fichier source 1 = ") << sParms.strSrcFile1 << endl;
-	CTsFileAnalyzer(sParms.strSrcFile1.c_str(), tstring(_TL("file #1","fichier 1"))).Analyze().Output(cLog_fil);
+	TCHAR	szMsg[64];
 
-	cLog_fil << _TL(
-		"## Source File #2 = ",
-		"## Fichier source 2 = ") << sParms.strSrcFile2 << endl;
-	CTsFileAnalyzer(sParms.strSrcFile2.c_str(), tstring(_TL("file #2","fichier 2"))).Analyze().Output(cLog_fil);
+	for (ITERATE_CONST_VECTOR(sParms.vstrSrcFiles, tstring, it)) {
+		UINT	nFil = static_cast<UINT>(distance<vtstring::const_iterator>(sParms.vstrSrcFiles.begin(), it)) + 1;
+
+		_stprintf_s(szMsg, _TL("## Source File #%i = ", "## Fichier source %i = "), nFil);
+		cLog_fil << szMsg << *it << endl;
+		_stprintf_s(szMsg, _TL("file #%i", "fichier %i"), nFil);
+		CTsFileAnalyzer(it->c_str(), szMsg).Analyze().Output(cLog_fil);
+	}
 
 	cLog_fil <<  _TL(
 		"## Output File = ",
@@ -592,10 +616,23 @@ void CTsMergerDialog::StopAndWait()
 	}
 }
 
+void CTsMergerDialog::BrowseFile(IdFile eFil)
+{
+	vtstring	vstrNew;
+
+	COpenFileNameDialog().Do(hDlg, NULL,
+		_TL("Mpeg2 TS video\0*.TS\0","Vidéo Mpeg2 TS\0*.TS\0")
+		_TL("All files\0*.*\0","Tous les fichiers\0*.*\0"),
+		NULL, &vstrNew);
+
+	InitNewFiles(vstrNew, eFil);
+}
+
 INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static INT a_tabs1[] = {16,56,96,106/*110,120*/};	// Positions des tabulations dans la list box 1
-	static INT a_tabs2[] = {16,56,96,106};		// Positions des tabulations dans la list box 2
+	static INT	a_tabs1[] = {16,56,96,106/*110,120*/};	// Positions des tabulations dans la list box 1
+	static INT	a_tabs2[] = {16,56,96,106};				// Positions des tabulations dans la list box 2
+	IdFile		eFil;
 
 	switch (uMsg) {
 
@@ -610,8 +647,8 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		SetClassLongPtr(hDlg, GCLP_HICON, (LONG_PTR)LoadIcon(hAppInstance, MAKEINTRESOURCE(IDI_TSMERGER)));
 
-		hLeftFile	= GetDlgItem(hDlg, IDC_FILE1);
-		hRightFile	= GetDlgItem(hDlg, IDC_FILE2);
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+			hFiles[eFil] = GetDlgItem(hDlg, IDC_FILE1+eFil);
 		hLeftList	= GetDlgItem(hDlg, IDC_MSGLIST1);
 		hRightList	= GetDlgItem(hDlg, IDC_MSGLIST2);
 
@@ -619,27 +656,33 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendMessage(hLeftList, LB_SETTABSTOPS, (WPARAM)_countof(a_tabs1), (LPARAM)a_tabs1);
 		SendMessage(hRightList, LB_SETTABSTOPS, (WPARAM)_countof(a_tabs2), (LPARAM)a_tabs2);
 
-		WinSubClass<SC_FIL1>::SubClass(hLeftFile);
-		WinSubClass<SC_FIL2>::SubClass(hRightFile);
+		WinSubClass<SC_FIL1>::SubClass(hFiles[0]);
+		WinSubClass<SC_FIL2>::SubClass(hFiles[1]);
 		WinSubClass<SC_LBX1>::SubClass(hLeftList);
 		WinSubClass<SC_LBX2>::SubClass(hRightList);
 
-		DragAcceptFiles(hLeftFile, TRUE);
-		DragAcceptFiles(hRightFile, TRUE);
+		//// Initialisation du glisser-déposer et des barres de progression
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil) {
+			DragAcceptFiles(hFiles[eFil], TRUE);
+			SendDlgItemMessage(hDlg, IDC_PROGRESS1+eFil, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
+		}
+
+	#ifdef _DEBUG
+		// WM_DROPFILES ne marche pas en mode administrateur
+		// Ces fonctions ne sont valides qu'à partir de Windows Vista,
+		// ce qui nécessite que WINVER dans stdafx.h soit au moins égal à 0x600
+		ChangeWindowMessageFilter(WM_DROPFILES, MSGFLT_ADD);
+		ChangeWindowMessageFilter(WM_COPYDATA, MSGFLT_ADD);
+		ChangeWindowMessageFilter(0x0049, MSGFLT_ADD);
+	#endif
 
 		GetWindowRect(hDlg, &awRect);
 		SetWindowPos(hDlg, NULL, (nScrW-RWdt(awRect))/2, (nScrH-RHgt(awRect))/2, 0, 0, SWP_NOSIZE|SWP_NOZORDER);
 
-		//// Initialisation des barres de progression
-		SendDlgItemMessage(hDlg, IDC_PROGRESS1, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-		SendDlgItemMessage(hDlg, IDC_PROGRESS1, PBM_SETPOS, 0, 0);
-		SendDlgItemMessage(hDlg, IDC_PROGRESS2, PBM_SETRANGE, 0, MAKELPARAM(0, 100));
-		SendDlgItemMessage(hDlg, IDC_PROGRESS2, PBM_SETPOS, 0, 0);
-
 		cLog_merge.hWnd = hDlg;
 		cLog_out.hWnd = hDlg;
-		InitFile1();
-		InitFile2();
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+			InitFile(eFil);
 
 		DisplayFileAnalysis();
 
@@ -647,7 +690,7 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 			sParms.bUnion ? IDC_UNION_MODE : IDC_INTERSECTION_MODE);
 		set_check(hDlg, IDC_VIDEOREDO_PRJ, sParms.bMakeVrdPrj);
 
-		if (sParms.bBatch && !sParms.strSrcFile1.empty() && !sParms.strSrcFile2.empty() && !sParms.strDstFile.empty())
+		if (sParms.bBatch && !sParms.isSrcEmpty(0) && !sParms.isSrcEmpty(1) && !sParms.strDstFile.empty())
 			StartMerging();
 
 		// Renvoie True car la fenêtre a été initialisée
@@ -657,55 +700,18 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		// Commande reçue (clic, etc...)
 		switch(wParam) {
 
-		case _cmd_(IDC_BROWSE1, BN_CLICKED): {
-			tstring strNew =
-						COpenFileNameDialog().Do(
-							hDlg, NULL,
-							_TL("Mpeg2 TS video\0*.TS\0","Vidéo Mpeg2 TS\0*.TS\0")
-							_TL("All files\0*.*\0","Tous les fichiers\0*.*\0"),
-							NULL);
-			if (!strNew.empty()) {
-				if (strNew == sParms.strSrcFile2) {
-					MessageBox(hDlg,
-						_TL("This file is already set as second file",
-							"Ce fichier est déjà spécifié comme second fichier"),
-						_TL("File Error","Erreur de fichier"), MB_ICONERROR|MB_OK);
-					return TRUE;
-				}
-				sParms.strSrcFile1 = strNew;
-				InitFile1();
-				DisplayFileAnalysis();
-				sParms.strDstFile.clear();
-			}
-			return TRUE; }
+		case _cmd_(IDC_BROWSE1, BN_CLICKED):
+			BrowseFile(ID_FIL1);
+			return TRUE;
 
-		case _cmd_(IDC_BROWSE2, BN_CLICKED): {
-			tstring strNew =
-						COpenFileNameDialog().Do(
-							hDlg, NULL,
-							_TL("Mpeg2 TS video\0*.TS\0","Vidéo Mpeg2 TS\0*.TS\0")
-							_TL("All files\0*.*\0","Tous les fichiers\0*.*\0"),
-							NULL);
-
-			if (!strNew.empty()) {
-				if (strNew == sParms.strSrcFile1) {
-					MessageBox(hDlg,
-						_TL("This file is already set as first file",
-							"Ce fichier est déjà spécifié comme premier fichier"),
-						_TL("File Error","Erreur de fichier"), MB_ICONERROR|MB_OK);
-					return TRUE;
-				}
-				sParms.strSrcFile2 = strNew;
-				InitFile2();
-				DisplayFileAnalysis();
-				sParms.strDstFile.clear();
-			}
-			return TRUE; }
+		case _cmd_(IDC_BROWSE2, BN_CLICKED):
+			BrowseFile(ID_FIL2);
+			return TRUE;
 
 		case _cmd_(IDC_SWAP, BN_CLICKED): {
-			std::swap(sParms.strSrcFile1, sParms.strSrcFile2);
-			InitFile1();
-			InitFile2();
+			sParms.vstrSrcFiles[ID_FIL1].swap(sParms.vstrSrcFiles[ID_FIL2]);
+			for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+				InitFile(eFil);
 			DisplayFileAnalysis();
 			return TRUE; }
 
@@ -794,8 +800,8 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EnableDlgItem(IDC_QUIET2, true);
 		EnableDlgItem(IDC_PAUSE, true);
 		EnableDlgItem(IDCANCEL, true);
-		DragAcceptFiles(hLeftFile, FALSE);
-		DragAcceptFiles(hRightFile, FALSE);
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+			DragAcceptFiles(hFiles[eFil], FALSE);
 		return TRUE;
 
 	case WM_APP_PROGRESS:
@@ -816,11 +822,11 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EnableDlgItem(IDC_QUIET2, false);
 		EnableDlgItem(IDC_PAUSE, false);
 		EnableDlgItem(IDCANCEL, false);
-		DragAcceptFiles(hLeftFile, TRUE);
-		DragAcceptFiles(hRightFile, TRUE);
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+			DragAcceptFiles(hFiles[eFil], TRUE);
 		SetLogFile(NULL);
-		ShowFileInfo(IDC_INFO1, sParms.strSrcFile1.c_str());
-		ShowFileInfo(IDC_INFO2, sParms.strSrcFile2.c_str());
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+			ShowFileInfo(IDC_INFO1+eFil, sParms.getSrcFile(eFil));
 		if (sParms.bBatch)
 			PostMessage(hDlg, WM_COMMAND, MAKEWPARAM(IDCLOSE, BN_CLICKED), NULL);
 		hThreadHdl = NULL;
