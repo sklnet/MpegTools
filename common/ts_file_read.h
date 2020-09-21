@@ -231,7 +231,7 @@ public:
 
 		bool pcr_ok() const {
 			return t_First != HIGHEST_PCR_OFFSET || t_Last != HIGHEST_PCR_OFFSET; }
-		void Output(tostream & os);
+		void Output(tostream & os, LPCTSTR pszMsg = NULL);
 		void OutputRelation(tostream & os, const Result & sR2);
 	};
 
@@ -242,6 +242,9 @@ public:
 	}
 
 	Result Analyze();
+
+	// Analyse avec réessai ouvert si pcr_pref_pid != NO_PID et qu'aucun PCR correspondant n'a été trouvé
+	static Result Analyze(LPCTSTR pszFile, LPCTSTR pszId, UINT16 pcr_pref_pid = NO_PID);
 };
 
 // ====================================================================================

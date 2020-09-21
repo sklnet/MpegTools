@@ -81,12 +81,16 @@ public:
 
 #define SC_FIL1 ID_FIL1			//!< Identifiant pour le template de surclassement du fichier 1
 #define SC_FIL2 ID_FIL2			//!< Identifiant pour le template de surclassement du fichier 2
-#define SC_LBX1 ID_FIL1+0x10	//!< Identifiant pour le template de surclassement de la liste 1
-#define SC_LBX2 ID_FIL2+0x10	//!< Identifiant pour le template de surclassement de la liste 2
+#define SC_PGB1	ID_FIL1+0x10	//!< Identifiant pour le template de surclassement de la barre de progression 1
+#define SC_PGB2	ID_FIL2+0x10	//!< Identifiant pour le template de surclassement de la barre de progression 2
+#define SC_LBX1 ID_FIL1+0x20	//!< Identifiant pour le template de surclassement de la liste 1
+#define SC_LBX2 ID_FIL2+0x20	//!< Identifiant pour le template de surclassement de la liste 2
 
 class CTsMergerDialog :
 	public WinSubClass<SC_FIL1>,
 	public WinSubClass<SC_FIL2>,
+	public WinSubClass<SC_PGB1>,
+	public WinSubClass<SC_PGB2>,
 	public WinSubClass<SC_LBX1>,
 	public WinSubClass<SC_LBX2>,
 	public CModalDialogBase
@@ -103,6 +107,7 @@ class CTsMergerDialog :
 
 	CMergeTsProcessor::Params	sParms;
 	HWND						hFiles[ID_FMAX];
+	HWND						hPBars[ID_FMAX];
 	HWND						hLeftList;
 	HWND						hRightList;
 	tofstream					cLog_fil;
@@ -131,10 +136,8 @@ public:
 						InitFile(hFiles[eFil], IDC_INFO1+eFil, sParms.getSrcFile(eFil), sParms.getSrcFile(xlatf[eFil][0])); }
 
 	void			ShowFileInfo(UINT nId, LPCTSTR pszFileName);
-	void			ShowPctInfo(UINT nId, UINT nPct);
 	void			SetLogFile(LPCTSTR pszFileName);
 
-	vtstring		GetDroppedFiles(HDROP hDropFiles);
 	void			InitNewFiles(vtstring & vstrFiles, IdFile eFil);
 	void			GetDroppedFilesAndInit(HDROP hDropFiles, IdFile eFil);
 
@@ -143,12 +146,21 @@ public:
 	/// Gestion des messages des list-boxes
 	bool			LbSubProc(HWND hCtl, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+	/// Gestion des messages des barres de progression
+	void			PbPaintOvl(HWND hCtl, UINT uMsg);
+
 	void			StartMerging();
 	void			StopAndWait();
+
+	void			DoProgress(INT nIdt, UINT nVal);
 
 	virtual LRESULT SubProc(WinSubClass<SC_FIL1> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	virtual LRESULT SubProc(WinSubClass<SC_FIL2> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+	virtual LRESULT SubProc(WinSubClass<SC_PGB1> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+						LRESULT nRes = sc.CallWindowProc(uMsg, wParam, lParam); PbPaintOvl(sc.hSWnd, uMsg); return nRes; }
+	virtual LRESULT SubProc(WinSubClass<SC_PGB2> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+						LRESULT nRes = sc.CallWindowProc(uMsg, wParam, lParam); PbPaintOvl(sc.hSWnd, uMsg); return nRes; }
 	virtual LRESULT SubProc(WinSubClass<SC_LBX1> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 						return LbSubProc(sc.hSWnd, uMsg, wParam, lParam) ? 0 : sc.CallWindowProc(uMsg, wParam, lParam); }
 	virtual LRESULT SubProc(WinSubClass<SC_LBX2> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {

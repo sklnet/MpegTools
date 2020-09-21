@@ -220,16 +220,10 @@ CTsMergerDialog::CTsMergerDialog(CMergeTsProcessor::Params & sPrms) :
 	hThreadHdl(NULL),
 	pcr_pid(NO_PID)
 {
-	for (IdFile eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+	for (IdFile eFil = ID_FIL1; eFil < ID_FMAX; ++eFil) {
 		hFiles[eFil] = NULL;
-}
-
-void CTsMergerDialog::ShowPctInfo(UINT nId, UINT nPct)
-{
-	TCHAR	szWrk[8];
-
-	_stprintf_s(szWrk, _T("%u %%"), nPct);
-	SetItemText(nId, szWrk);
+		hPBars[eFil] = NULL;
+	}
 }
 
 void CTsMergerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
@@ -243,33 +237,6 @@ void CTsMergerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
 		_stprintf_s(szWrk, _TL("Size = %s Kb","Taille = %s Ko"), thousandsSepFmt((sSize.QuadPart+0x200) / 0x400).c_str());
 		SetItemText(nId, szWrk);
 	}
-}
-
-vtstring CTsMergerDialog::GetDroppedFiles(HDROP hDropFiles)
-{
-	vtstring	vstrRes;
-	TCHAR		szFile[MAX_PATH];
-
-	// on récupère le nombre de fichiers
-	UINT	nCount = DragQueryFile(hDropFiles, 0xffffffff, NULL, 0);
-	UINT	nInx;
-
-	for (nInx = 0; nInx < nCount; ++nInx) {
-		DragQueryFile(hDropFiles, nInx, szFile, _countof(szFile));
-		if (_tcsicmp(PathFindExtension(szFile), TEXT(".ts")) != 0)
-			continue;
-
-		vstrRes.push_back(szFile);
-	}
-
-	// on a fini de récupérer les fichiers
-	// on doit le signaler au système d'exploitation
-	// par la fonction suivante :
-	DragFinish(hDropFiles);
-
-	// Vider le nom du fichier de sortie par défaut
-	sParms.strDstFile.clear();
-	return vstrRes;
 }
 
 void CTsMergerDialog::InitNewFiles(vtstring & vstrFiles, IdFile eFil)
@@ -323,13 +290,21 @@ void CTsMergerDialog::GetDroppedFilesAndInit(HDROP hDropFiles, IdFile eFil)
 	vtstring vstrFiles = GetDroppedFiles(hDropFiles);
 
 	InitNewFiles(vstrFiles, eFil);
+
+	// Vider le nom du fichier de sortie par défaut
+	sParms.strDstFile.clear();
+}
+
+void CTsMergerDialog::DoProgress(INT nIdt, UINT nVal)
+{
+	SendDlgItemMessage(hDlg, IDC_PROGRESS1+nIdt, PBM_SETPOS, nVal, 0);
 }
 
 /// Traitement des messages du contrôle de nom de fichier 1 surclassé
 LRESULT CTsMergerDialog::SubProc(WinSubClass<SC_FIL1> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_DROPFILES) {
-		GetDroppedFilesAndInit((HDROP)wParam, SC_FIL1);
+		GetDroppedFilesAndInit(reinterpret_cast<HDROP>(wParam), SC_FIL1);
 		return 0;
 	}
 	return sc.CallWindowProc(uMsg, wParam, lParam);
@@ -339,7 +314,7 @@ LRESULT CTsMergerDialog::SubProc(WinSubClass<SC_FIL1> & sc, UINT uMsg, WPARAM wP
 LRESULT CTsMergerDialog::SubProc(WinSubClass<SC_FIL2> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_DROPFILES) {
-		GetDroppedFilesAndInit((HDROP)wParam, SC_FIL2);
+		GetDroppedFilesAndInit(reinterpret_cast<HDROP>(wParam), SC_FIL2);
 		return 0;
 	}
 	return sc.CallWindowProc(uMsg, wParam, lParam);
@@ -463,6 +438,34 @@ bool CTsMergerDialog::LbSubProc(HWND hCtl, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return false;
 }
 
+void CTsMergerDialog::PbPaintOvl(HWND hCtl, UINT uMsg)
+{
+	if (uMsg != WM_PAINT)
+		return;
+
+	TCHAR			szPct[8];
+	static HFONT	hFont	= static_cast<HFONT>(GetStockObject(ANSI_VAR_FONT)); 
+	UINT			nPos	= SendMessage(hCtl, PBM_GETPOS, 0, NULL);
+
+	_stprintf_s(szPct, _T("%u %%"), nPos);
+
+	InvalidateRect(hCtl, NULL, FALSE);
+
+	PAINTSTRUCT ps;
+	HDC			hDC			= BeginPaint(hCtl, &ps);
+	HFONT		hOldFont	= static_cast<HFONT>(SelectObject(hDC, hFont)); // Retrieve a handle to the variable stock font
+
+	// Select the variable stock font into the specified device context. 
+	if (hOldFont = static_cast<HFONT>(SelectObject(hDC, hFont))) {
+		SetBkMode(hDC, TRANSPARENT);
+		DrawTextEx(hDC, szPct, _tcslen(szPct), &ps.rcPaint, DT_CENTER|DT_SINGLELINE|DT_VCENTER, NULL);
+
+		// Restore the original font.        
+		SelectObject(hDC, hOldFont); 
+	}
+	EndPaint(hCtl, &ps);
+}
+
 void CTsMergerDialog::SetLogFile(LPCTSTR pszFileName)
 {
 	if (cLog_fil.is_open())
@@ -473,20 +476,13 @@ void CTsMergerDialog::SetLogFile(LPCTSTR pszFileName)
 
 void CTsMergerDialog::Display1FileAnalysis(IdFile eFil, CTsFileAnalyzer::Result & sRes, UINT16 pcr_pref_pid)
 {
-	TCHAR szTxt[64];
+	TCHAR szTxt[16];
 
 	if (!sParms.isSrcEmpty(eFil)) {
 		_stprintf_s(szTxt, _TL("file #%i", "fichier %i"), eFil+1);
-		sRes = CTsFileAnalyzer(sParms.getSrcFile(eFil), szTxt, pcr_pref_pid).Analyze();
+		sRes = CTsFileAnalyzer::Analyze(sParms.getSrcFile(eFil), szTxt, pcr_pref_pid);
 
-		if (pcr_pref_pid != NO_PID && !sRes.pcr_ok()) {
-			// En cas d'échec du 2nd fichier, les fichiers ne sont pas compatibles. On réanalyse néanmoins, pour
-			// affichage, le second fichier SANS obliger à utiliser un PCR PID quelconque.
-			sRes = CTsFileAnalyzer(sParms.getSrcFile(eFil), szTxt).Analyze();
-		}
-		_stprintf_s(szTxt, _TL("Information about file #%i:", "Informations pour le fichier %i :"), eFil+1);
-		cLog_merge << szTxt << endl;
-		sRes.Output(cLog_merge);
+		sRes.Output(cLog_merge, _TL("Information about ", "Informations pour le "));
 	}
 
 	SendDlgItemMessage(hDlg, IDC_PROGRESS1+eFil, PBM_SETPOS, 0, 0);
@@ -647,8 +643,10 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		SetClassLongPtr(hDlg, GCLP_HICON, (LONG_PTR)LoadIcon(hAppInstance, MAKEINTRESOURCE(IDI_TSMERGER)));
 
-		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil)
+		for (eFil = ID_FIL1; eFil < ID_FMAX; ++eFil) {
 			hFiles[eFil] = GetDlgItem(hDlg, IDC_FILE1+eFil);
+			hPBars[eFil] = GetDlgItem(hDlg, IDC_PROGRESS1+eFil);
+		}
 		hLeftList	= GetDlgItem(hDlg, IDC_MSGLIST1);
 		hRightList	= GetDlgItem(hDlg, IDC_MSGLIST2);
 
@@ -658,6 +656,8 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		WinSubClass<SC_FIL1>::SubClass(hFiles[0]);
 		WinSubClass<SC_FIL2>::SubClass(hFiles[1]);
+		WinSubClass<SC_PGB1>::SubClass(hPBars[0]);
+		WinSubClass<SC_PGB2>::SubClass(hPBars[1]);
 		WinSubClass<SC_LBX1>::SubClass(hLeftList);
 		WinSubClass<SC_LBX2>::SubClass(hRightList);
 
@@ -805,8 +805,7 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return TRUE;
 
 	case WM_APP_PROGRESS:
-		SendDlgItemMessage(hDlg, lParam == ID_FIL1 ? IDC_PROGRESS1 : IDC_PROGRESS2, PBM_SETPOS, wParam, 0);
-		ShowPctInfo(lParam == ID_FIL1 ? IDC_INFO1 : IDC_INFO2, (UINT)wParam);
+		DoProgress(lParam, wParam);
 		return TRUE;
 
 	case WM_APP_PROCESS_END:

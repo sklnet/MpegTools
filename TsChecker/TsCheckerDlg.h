@@ -70,10 +70,12 @@ public:
 // ====================================================================================
 
 #define SC_FIL 0	//!< Identifiant pour le template de surclassement du fichier 1
-#define SC_LBX 1	//!< Identifiant pour le template de surclassement de la list box
+#define SC_PGB 1	//!< Identifiant pour le template de surclassement de la barre de progression
+#define SC_LBX 2	//!< Identifiant pour le template de surclassement de la list box
 
 class CTsCheckerDialog :
 	public WinSubClass<SC_FIL>,
+	public WinSubClass<SC_PGB>,
 	public WinSubClass<SC_LBX>,
 	public CModalDialogBase
 {
@@ -90,6 +92,7 @@ class CTsCheckerDialog :
 	CTestTsProcessor::Params
 				sParms;
 	HWND		hTstFile;
+	HWND		hPBar;
 	HWND		hTstList;
 	tofstream	cLog_fil;
 	CLogStream	cLog;
@@ -109,19 +112,21 @@ public:
 	void			DisplayFileAnalysis();
 	void			InitFile();
 	void			ShowFileInfo(UINT nId, LPCTSTR pszFileName);
-	void			ShowPctInfo(UINT nId, UINT nPct);
 	void			SetLogFile(LPCTSTR pszFileName);
 
-	void			GetDroppedFiles(HDROP hDropFiles, tstring & strFile);
-
-	void	LbCopy(HWND hCtl);
+	void			LbCopy(HWND hCtl);
 	/// Gestion des messages de la list box
 	bool			LbSubProc(HWND hCtl, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	/// Gestion des messages des barres de progression
+	void			PbPaintOvl(HWND hCtl, UINT uMsg);
 
 	void			StartChecking();
 	void			StopAndWait();
 
 	virtual LRESULT SubProc(WinSubClass<SC_FIL> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	virtual LRESULT SubProc(WinSubClass<SC_PGB> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+						LRESULT nRes = sc.CallWindowProc(uMsg, wParam, lParam); PbPaintOvl(sc.hSWnd, uMsg); return nRes; }
 	virtual LRESULT SubProc(WinSubClass<SC_LBX> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 						return LbSubProc(sc.hSWnd, uMsg, wParam, lParam) ? 0 : sc.CallWindowProc(uMsg, wParam, lParam); }
 

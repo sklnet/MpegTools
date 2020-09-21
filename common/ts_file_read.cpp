@@ -233,8 +233,12 @@ void CTsFileAnalyzer::PidList::Output(tostream & os, LPCTSTR pszMsg)
 	os << strWrk << endl;
 }
 
-void CTsFileAnalyzer::Result::Output(tostream & os)
+void CTsFileAnalyzer::Result::Output(tostream & os, LPCTSTR pszMsg)
 {
+	if (pszMsg) {
+		os << pszMsg << strFileId << _TL(":", " :") << endl;
+	}
+
 	vPidList.Output(os, _TL("\tIncluded PIDs (*=PCR)\t=\t","\tPIDs inclus (*=PCR)\t=\t"));
 	vRootPids.Output(os, _TL("\tRoot PIDs found\t=\t","\tPIDs racine trouvés\t=\t"));
 
@@ -317,6 +321,18 @@ CTsFileAnalyzer::Result CTsFileAnalyzer::Analyze()
 	sAnRes.vPidList.sort();
 	sAnRes.vRootPids.sort();
 	return sAnRes;
+}
+
+CTsFileAnalyzer::Result CTsFileAnalyzer::Analyze(LPCTSTR pszFile, LPCTSTR pszId, UINT16 pcr_pref_pid)
+{
+	CTsFileAnalyzer::Result sRes = CTsFileAnalyzer(pszFile, pszId, pcr_pref_pid).Analyze();
+
+	if (pcr_pref_pid != NO_PID && !sRes.pcr_ok()) {
+		// En cas d'échec du 2nd fichier, les fichiers ne sont pas compatibles. On réanalyse néanmoins, pour
+		// affichage, le second fichier SANS obliger à utiliser un PCR PID quelconque.
+		sRes = CTsFileAnalyzer(pszFile, pszId).Analyze();
+	}
+	return sRes;
 }
 
 // ====================================================================================

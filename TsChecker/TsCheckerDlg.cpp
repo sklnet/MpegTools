@@ -189,19 +189,12 @@ CTsCheckerDialog::CTsCheckerDialog(CTestTsProcessor::Params & sPrms) :
 	CModalDialogBase(IDD_TSCHECKER),
 	sParms(sPrms),
 	hTstFile(NULL),
+	hPBar(NULL),
 	hTstList(NULL),
 	cLog(hTstList, cLog_fil),
 	dwThreadId(0),
 	hThreadHdl(NULL)
 {
-}
-
-void CTsCheckerDialog::ShowPctInfo(UINT nId, UINT nPct)
-{
-	TCHAR	szWrk[8];
-
-	_stprintf_s(szWrk, _T("%u %%"), nPct);
-	SetItemText(nId, szWrk);
 }
 
 void CTsCheckerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
@@ -217,37 +210,14 @@ void CTsCheckerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
 	}
 }
 
-void CTsCheckerDialog::GetDroppedFiles(HDROP hDropFiles, tstring & strFile)
-{
-	TCHAR	szFile[MAX_PATH];
-
-	// on récupère le nombre de fichiers
-	UINT	nCount = DragQueryFile(hDropFiles, 0xffffffff, NULL, 0);
-	UINT	nInx;
-
-	for (nInx = 0; nInx < nCount; ++nInx) {
-		DragQueryFile(hDropFiles, nInx, szFile, _countof(szFile));
-		if (_tcsicmp(PathFindExtension(szFile), TEXT(".ts")) == 0) {
-			strFile = szFile;
-			break;
-		}
-	}
-
-	// on a fini de récupérer les fichiers
-	// on doit le signaler au système d'exploitation
-	// par la fonction suivante :
-	DragFinish(hDropFiles);
-}
-
 /// Traitement des messages du contrôle de nom de fichier surclassé
 LRESULT CTsCheckerDialog::SubProc(WinSubClass<SC_FIL> & sc, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_DROPFILES) {
-		tstring strFile;
+		vtstring vstrFiles = GetDroppedFiles(reinterpret_cast<HDROP>(wParam));
 
-		GetDroppedFiles((HDROP)wParam, strFile);
-		if (!strFile.empty()) {
-			sParms.strTstFile = strFile;
+		if (!vstrFiles.empty()) {
+			sParms.strTstFile = vstrFiles.front();
 			InitFile();
 		}
 		DisplayFileAnalysis();
@@ -373,6 +343,34 @@ bool CTsCheckerDialog::LbSubProc(HWND hCtl, UINT uMsg, WPARAM wParam, LPARAM lPa
 	return false;
 }
 
+void CTsCheckerDialog::PbPaintOvl(HWND hCtl, UINT uMsg)
+{
+	if (uMsg != WM_PAINT)
+		return;
+
+	TCHAR			szPct[8];
+	static HFONT	hFont	= static_cast<HFONT>(GetStockObject(ANSI_VAR_FONT)); 
+	UINT			nPos	= SendMessage(hCtl, PBM_GETPOS, 0, NULL);
+
+	_stprintf_s(szPct, _T("%u %%"), nPos);
+
+	InvalidateRect(hCtl, NULL, FALSE);
+
+	PAINTSTRUCT ps;
+	HDC			hDC			= BeginPaint(hCtl, &ps);
+	HFONT		hOldFont	= static_cast<HFONT>(SelectObject(hDC, hFont)); // Retrieve a handle to the variable stock font
+
+	// Select the variable stock font into the specified device context. 
+	if (hOldFont = static_cast<HFONT>(SelectObject(hDC, hFont))) {
+		SetBkMode(hDC, TRANSPARENT);
+		DrawTextEx(hDC, szPct, _tcslen(szPct), &ps.rcPaint, DT_CENTER|DT_SINGLELINE|DT_VCENTER, NULL);
+
+		// Restore the original font.        
+		SelectObject(hDC, hOldFont); 
+	}
+	EndPaint(hCtl, &ps);
+}
+
 void CTsCheckerDialog::SetLogFile(LPCTSTR pszFileName)
 {
 	if (cLog_fil.is_open())
@@ -385,10 +383,9 @@ void CTsCheckerDialog::DisplayFileAnalysis()
 {
 	if (!sParms.strTstFile.empty()) {
 		SendMessage(hTstList, LB_RESETCONTENT, 0, NULL);
-		cLog << _TL("Information about this file","Informations concernant ce fichier") << endl;
 
 		CTsFileAnalyzer(sParms.strTstFile.c_str(),
-			tstring(_TL("file","fichier"))).Analyze().Output(cLog);
+			tstring(_TL("file","fichier"))).Analyze().Output(cLog, _TL("Information about this ","Informations concernant ce "));
 
 		SendDlgItemMessage(hDlg, IDC_PROGRESS, PBM_SETPOS, 0, 0);
 	}
@@ -461,12 +458,14 @@ INT_PTR CTsCheckerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetClassLongPtr(hDlg, GCLP_HICON, (LONG_PTR)LoadIcon(hAppInstance, MAKEINTRESOURCE(IDI_TSCHECKER)));
 
 		hTstFile	= GetDlgItem(hDlg, IDC_FILE);
+		hPBar		= GetDlgItem(hDlg, IDC_PROGRESS);
 		hTstList	= GetDlgItem(hDlg, IDC_MSGLIST);
 
 		// Définir les tabulations dans la list box :
 		SendMessage(hTstList, LB_SETTABSTOPS, (WPARAM)_countof(a_tabs), (LPARAM)a_tabs);
 
 		WinSubClass<SC_FIL>::SubClass(hTstFile);
+		WinSubClass<SC_PGB>::SubClass(hPBar);
 		WinSubClass<SC_LBX>::SubClass(hTstList);
 
 		DragAcceptFiles(hTstFile, TRUE);
@@ -570,7 +569,6 @@ INT_PTR CTsCheckerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_APP_PROGRESS:
 		SendDlgItemMessage(hDlg, IDC_PROGRESS, PBM_SETPOS, wParam, 0);
-		ShowPctInfo(IDC_INFO, (UINT)wParam);
 		return TRUE;
 
 	case WM_APP_PROCESS_END:

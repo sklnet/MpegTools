@@ -82,25 +82,25 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	//tstring		strSrcFile1, strSrcFile2, strDstFile;
 
-	cCmdLine.strSrcFile1 =
+	cCmdLine.setSrcFile(ID_FIL1,
 		COpenFileNameDialog().Do(
 			NULL, NULL,
 			_TL("Mpeg2 TS video\0*.TS\0","Vidéo Mpeg2 TS\0*.TS\0")
 			_TL("All files\0*.*\0","Tous les fichiers\0*.*\0"),
-			NULL);
-	if (cCmdLine.strSrcFile1.empty())
+			NULL));
+	if (cCmdLine.isSrcEmpty(ID_FIL1))
 		return 1;
 
 	for (;;) {
-		cCmdLine.strSrcFile2 =
+		cCmdLine.setSrcFile(ID_FIL2,
 			COpenFileNameDialog().Do(
 				NULL, NULL,
 				_TL("Mpeg2 TS video\0*.TS\0","Vidéo Mpeg2 TS\0*.TS\0")
 				_TL("All files\0*.*\0","Tous les fichiers\0*.*\0"),
-				NULL);
-		if (cCmdLine.strSrcFile2.empty())
+				NULL));
+	if (cCmdLine.isSrcEmpty(ID_FIL2))
 			return 1;
-		if (cCmdLine.strSrcFile2 != cCmdLine.strSrcFile1)
+	if (cCmdLine.vstrSrcFiles[ID_FIL1] != cCmdLine.vstrSrcFiles[ID_FIL2])
 			break;
 		MessageBox(NULL,
 			_TL("This file is already set as first file",
