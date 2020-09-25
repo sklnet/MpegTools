@@ -213,19 +213,21 @@ public:
 
 	struct Result
 	{
-		TIM_27M			t_First;	//!< Temps PCR du premier paquet du fichier qui en ait un
-		TIM_27M			t_Last;		//!< Temps PCR du dernier paquet du fichier
-		TIM_27M			t_Duration;	//!< Durée entre le premier et le dernier PCR
-		WORD			pcr_pid;	//!< PID utilisé pour le PCR
-		PidList			vPidList;	//!< Liste des PIDs de medias trouvés
-		PidList			vRootPids;	//!< Liste des PIDs racine trouvés
-		tstring			strFileId;	//!< Identification du fichier (texte)
+		TIM_27M		t_First;		//!< Temps PCR du premier paquet du fichier qui en ait un
+		TIM_27M		t_Last;			//!< Temps PCR du dernier paquet du fichier
+		TIM_27M		t_Duration;		//!< Durée entre le premier et le dernier PCR
+		WORD		pcr_pid;		//!< PID utilisé pour le PCR
+		PidList		vPidList;		//!< Liste des PIDs de medias trouvés
+		PidList		vRootPids;		//!< Liste des PIDs racine trouvés
+		tstring		strFileId;		//!< Identification du fichier (texte)
+		INT			nInxPathName;	//!< Index du fichier dans la liste
 
 		Result(tstring strFilId = tstring()) :
 			t_First(HIGHEST_PCR_OFFSET),
 			t_Last(HIGHEST_PCR_OFFSET),
 			t_Duration(0),
-			strFileId(strFilId)
+			strFileId(strFilId),
+			nInxPathName(-1)
 		{
 		}
 
@@ -233,6 +235,9 @@ public:
 			return t_First != HIGHEST_PCR_OFFSET || t_Last != HIGHEST_PCR_OFFSET; }
 		void Output(tostream & os, LPCTSTR pszMsg = NULL);
 		void OutputRelation(tostream & os, const Result & sR2);
+
+		bool operator < (const Result & p2) const {
+				return t_First < p2.t_First; }
 	};
 
 	CTsFileAnalyzer(LPCTSTR pszFileName, tstring strFilId, UINT16 pcr_pref_pid = NO_PID) :
@@ -246,5 +251,8 @@ public:
 	// Analyse avec réessai ouvert si pcr_pref_pid != NO_PID et qu'aucun PCR correspondant n'a été trouvé
 	static Result Analyze(LPCTSTR pszFile, LPCTSTR pszId, UINT16 pcr_pref_pid = NO_PID);
 };
+
+typedef CTsFileAnalyzer::Result AnaResult;
+typedef vector<AnaResult>		VAnaResult;
 
 // ====================================================================================

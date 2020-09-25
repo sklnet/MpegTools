@@ -350,7 +350,7 @@ void CTsCheckerDialog::PbPaintOvl(HWND hCtl, UINT uMsg)
 
 	TCHAR			szPct[8];
 	static HFONT	hFont	= static_cast<HFONT>(GetStockObject(ANSI_VAR_FONT)); 
-	UINT			nPos	= SendMessage(hCtl, PBM_GETPOS, 0, NULL);
+	UINT			nPos	= static_cast<UINT>(SendMessage(hCtl, PBM_GETPOS, 0, NULL));
 
 	_stprintf_s(szPct, _T("%u %%"), nPos);
 
@@ -363,7 +363,7 @@ void CTsCheckerDialog::PbPaintOvl(HWND hCtl, UINT uMsg)
 	// Select the variable stock font into the specified device context. 
 	if (hOldFont = static_cast<HFONT>(SelectObject(hDC, hFont))) {
 		SetBkMode(hDC, TRANSPARENT);
-		DrawTextEx(hDC, szPct, _tcslen(szPct), &ps.rcPaint, DT_CENTER|DT_SINGLELINE|DT_VCENTER, NULL);
+		DrawTextEx(hDC, szPct, (int)_tcslen(szPct), &ps.rcPaint, DT_CENTER|DT_SINGLELINE|DT_VCENTER, NULL);
 
 		// Restore the original font.        
 		SelectObject(hDC, hOldFont); 

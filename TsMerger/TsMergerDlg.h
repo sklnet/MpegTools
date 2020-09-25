@@ -95,6 +95,13 @@ class CTsMergerDialog :
 	public WinSubClass<SC_LBX2>,
 	public CModalDialogBase
 {
+	enum FileRelation {
+		NoFile,
+		Unrelated,
+		PartiallyRelated,
+		Related
+	};
+
 	/// Aide en ligne
 	class HelpDialog : public CHelpDialogBase, public CModelessDialogHelper<HelpDialog, LPCDLGTEMPLATE>
 	{
@@ -128,7 +135,7 @@ public:
 	/// Constructeur :
 	CTsMergerDialog(CMergeTsProcessor::Params & sPrms);
 
-	void			Display1FileAnalysis(IdFile eFil, CTsFileAnalyzer::Result & sRes, UINT16 pcr_pref_pid = NO_PID);
+	void			Display1FileAnalysis(IdFile eFil, AnaResult & sRes, UINT16 pcr_pref_pid = NO_PID);
 	void			DisplayFileAnalysis();
 	void			InitFile(HWND hCtl, UINT nInfoId, LPCTSTR pszFileName, LPCTSTR pszOtherFileName);
 	void			InitFile(IdFile eFil) {

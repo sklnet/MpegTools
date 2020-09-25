@@ -191,7 +191,7 @@ bool CTsGrpFileReader::LoadGroup() throw(...)
 
 // ====================================================================================
 
-#define MAX_PACKET_LOOP	250000
+#define MAX_PACKET_LOOP	150000
 
 void CTsFileAnalyzer::PidList::RefPid(WORD pid, bool bHasPcr)
 {

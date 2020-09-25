@@ -2,7 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by TsMerger_fr.rc
 //
-#define IDC_MYICON                      2
 #define IDI_TSMERGER                    100
 #define IDD_TSMERGER                    101
 #define IDD_ABOUTBOX                    103
@@ -24,6 +23,7 @@
 #define IDC_SWAP                        1014
 #define IDC_HELPBOX                     1015
 #define IDC_ABOUTBOX                    1016
+#define IDC_MYICON                      1017
 #define IDC_UNION_MODE                  1019
 #define IDC_INTERSECTION_MODE           1020
 #define IDC_PAUSE                       1021

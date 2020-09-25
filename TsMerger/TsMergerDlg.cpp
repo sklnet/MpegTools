@@ -242,7 +242,7 @@ void CTsMergerDialog::ShowFileInfo(UINT nId, LPCTSTR pszFileName)
 void CTsMergerDialog::InitNewFiles(vtstring & vstrFiles, IdFile eFil)
 {
 	INT		nInx;
-	INT		nMax = vstrFiles.size();
+	INT		nMax = static_cast<INT>(vstrFiles.size());
 	IdFile	eDst;
 
 	// Vérifier qu'on ne va pas comparer un fichier à lui-même
@@ -444,8 +444,8 @@ void CTsMergerDialog::PbPaintOvl(HWND hCtl, UINT uMsg)
 		return;
 
 	TCHAR			szPct[8];
-	static HFONT	hFont	= static_cast<HFONT>(GetStockObject(ANSI_VAR_FONT)); 
-	UINT			nPos	= SendMessage(hCtl, PBM_GETPOS, 0, NULL);
+	static HFONT	hFont	= static_cast<HFONT>(GetStockObject(ANSI_VAR_FONT));
+	UINT			nPos	= static_cast<UINT>(SendMessage(hCtl, PBM_GETPOS, 0, NULL));
 
 	_stprintf_s(szPct, _T("%u %%"), nPos);
 
@@ -455,13 +455,13 @@ void CTsMergerDialog::PbPaintOvl(HWND hCtl, UINT uMsg)
 	HDC			hDC			= BeginPaint(hCtl, &ps);
 	HFONT		hOldFont	= static_cast<HFONT>(SelectObject(hDC, hFont)); // Retrieve a handle to the variable stock font
 
-	// Select the variable stock font into the specified device context. 
+	// Select the variable stock font into the specified device context.
 	if (hOldFont = static_cast<HFONT>(SelectObject(hDC, hFont))) {
 		SetBkMode(hDC, TRANSPARENT);
-		DrawTextEx(hDC, szPct, _tcslen(szPct), &ps.rcPaint, DT_CENTER|DT_SINGLELINE|DT_VCENTER, NULL);
+		DrawTextEx(hDC, szPct, (int)_tcslen(szPct), &ps.rcPaint, DT_CENTER|DT_SINGLELINE|DT_VCENTER, NULL);
 
-		// Restore the original font.        
-		SelectObject(hDC, hOldFont); 
+		// Restore the original font.
+		SelectObject(hDC, hOldFont);
 	}
 	EndPaint(hCtl, &ps);
 }
@@ -474,7 +474,7 @@ void CTsMergerDialog::SetLogFile(LPCTSTR pszFileName)
 		cLog_fil.open(pszFileName);
 }
 
-void CTsMergerDialog::Display1FileAnalysis(IdFile eFil, CTsFileAnalyzer::Result & sRes, UINT16 pcr_pref_pid)
+void CTsMergerDialog::Display1FileAnalysis(IdFile eFil, AnaResult & sRes, UINT16 pcr_pref_pid)
 {
 	TCHAR szTxt[16];
 
@@ -493,7 +493,9 @@ void CTsMergerDialog::DisplayFileAnalysis()
 	SendMessage(hLeftList, LB_RESETCONTENT, 0, NULL);
 	SendMessage(hRightList, LB_RESETCONTENT, 0, NULL);
 
-	CTsFileAnalyzer::Result	sRes[ID_FMAX];
+	FileRelation	eRelatedFiles = NoFile;
+	INT64			nDist;
+	AnaResult		sRes[ID_FMAX];
 
 	pcr_pid = NO_PID;
 
@@ -503,8 +505,6 @@ void CTsMergerDialog::DisplayFileAnalysis()
 	// Vérification du fichier de droite, en l'obligeant à utiliser le même PCR PID que le fichier
 	// de gauche
 	Display1FileAnalysis(ID_FIL2, sRes[ID_FIL2], sRes[ID_FIL1].pcr_pid);
-
-	bool bTwoRelatedFiles = false;
 
 	if (!sParms.isSrcEmpty(ID_FIL1) && !sParms.isSrcEmpty(ID_FIL2)) {
 		if (sRes[ID_FIL1].pcr_pid == sRes[1].pcr_pid) {
@@ -519,38 +519,46 @@ void CTsMergerDialog::DisplayFileAnalysis()
 				UINT	nDistance		= (UINT)d.getEditDistance();
 
 				if (nSiz[ID_FIL1] == nSiz[ID_FIL2] && nDistance == 0) {
-					bTwoRelatedFiles = true;
+					eRelatedFiles = Related;
 				} else {
 					if (((nDistance*8) / max(nSiz[ID_FIL1], nSiz[ID_FIL2])) <=4) {
-						cLog_merge << endl
-							<<	_TL("The structures of these files are similar but not identical.",
-									"Les structures de ces fichiers sont similaires mais pas identiques.") << endl
-							<<	_TL("You can try to merge them at your own risks.",
-									"Vous pouvez tenter de les fusionner, à vos propres risques. Vous aurez") << endl
-							<<	_TL("You will probably want to use the “Shut up!” option during merging.",
-									"sans doute besoin d'utiliser l'option « Silence ! » au cours de la fusion.") << endl;
-						bTwoRelatedFiles = true;
+						eRelatedFiles = PartiallyRelated;
 					}
 				}
 			}
-		}
+		} else
+			eRelatedFiles = Unrelated;
+	}
 
-		if (!bTwoRelatedFiles) {
-			cLog_merge << endl
-				<<	_TL("These files are not related and cannot be merged.",
-						"Ces fichiers n'ont pas de relation et ne peuvent pas être fusionnés.") << endl;
+	switch (eRelatedFiles) {
+
+	case Unrelated:
+		cLog_merge << endl
+			<<	_TL("These files are not related and cannot be merged.",
+					"Ces fichiers n'ont pas de relation et ne peuvent pas être fusionnés.") << endl;
+		break;
+
+	case PartiallyRelated:
+		cLog_merge << endl
+			<<	_TL("The structures of these files are similar but not identical.",
+					"Les structures de ces fichiers sont similaires mais pas identiques.") << endl
+			<<	_TL("You can try to merge them at your own risks.",
+					"Vous pouvez tenter de les fusionner, à vos propres risques. Vous aurez") << endl
+			<<	_TL("You will probably want to use the “Shut up!” option during merging.",
+					"sans doute besoin d'utiliser l'option « Silence ! » au cours de la fusion.") << endl;
+		break;
+
+	case Related:
+		nDist = TIM_27M_Distance(sRes[ID_FIL1].t_First, sRes[ID_FIL2].t_First);
+
+		if (nDist > 0) {
+			sRes[ID_FIL1].OutputRelation(cLog_merge, sRes[ID_FIL2]);
 		} else {
-			INT64 nDist = TIM_27M_Distance(sRes[ID_FIL1].t_First, sRes[ID_FIL2].t_First);
-
-			if (nDist > 0) {
-				sRes[ID_FIL1].OutputRelation(cLog_merge, sRes[ID_FIL2]);
-			} else {
-				sRes[ID_FIL2].OutputRelation(cLog_merge, sRes[ID_FIL1]);
-			}
+			sRes[ID_FIL2].OutputRelation(cLog_merge, sRes[ID_FIL1]);
 		}
 	}
 
-	EnableDlgItem(IDC_SAVE_AS, bTwoRelatedFiles);
+	EnableDlgItem(IDC_SAVE_AS, eRelatedFiles > Unrelated);
 }
 
 void CTsMergerDialog::InitFile(HWND hCtl, UINT nInfoId, LPCTSTR pszFileName, LPCTSTR pszOtherFileName)
@@ -634,7 +642,7 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_INITDIALOG: {
 	#if USE_CONSOLE
-		startConsole(_T("Fenêtre de diagnostic de TsMerger"), _T("TsMerger.log"));
+		startConsole(_TL("TsMerger Diagnostic Window","Fenêtre de diagnostic de TsMerger"), _T("TsMerger.log"));
 	#endif
 		// Initialisation de la fenêtre
 		LONG	nScrW = GetSystemMetrics(SM_CXFULLSCREEN);
@@ -805,7 +813,7 @@ INT_PTR CTsMergerDialog::DialogProc(UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return TRUE;
 
 	case WM_APP_PROGRESS:
-		DoProgress(lParam, wParam);
+		DoProgress(static_cast<INT>(lParam), static_cast<UINT>(wParam));
 		return TRUE;
 
 	case WM_APP_PROCESS_END:
